@@ -143,7 +143,7 @@ public class OnlineGameScreen extends JFrame {
                         return;
                     }
 
-                    session.sendLine(OnlineProtocol.serializeResult(result));
+                    session.sendLine(OnlineProtocol.serializeIncomingAttack(result));
                     localTurn.set(false);
                     updateTurnLabel();
                 } else {
@@ -183,25 +183,47 @@ public class OnlineGameScreen extends JFrame {
                                     updateTurnLabel();
                                 }
                             });
-                            session.sendLine(OnlineProtocol.serializeResult(result));
+                            session.sendLine(OnlineProtocol.serializeShotResult(result));
                         }
                     } else {
-                        OnlineProtocol.ShotResult result = OnlineProtocol.parseResult(message);
-                        if (result != null) {
+                        OnlineProtocol.ShotResult incoming = OnlineProtocol.parseIncomingAttack(message);
+                        if (incoming != null) {
                             SwingUtilities.invokeLater(() -> {
-                                OnlineProtocol.paintShot(attackGrid, result.row, result.col, result.hit);
-                                if (result.sunkShipName != null) {
+                                OnlineProtocol.paintShot(localDisplayGrid, incoming.row, incoming.col, incoming.hit);
+                                if (incoming.sunkShipName != null) {
                                     announcer.setVisible(true);
-                                    announcements.append(result.sunkShipName + " of player " + remotePlayer.playerno + " sunk\n");
+                                    announcements.append(incoming.sunkShipName + " of player " + localPlayer.playerno + " sunk\n");
                                 }
-                                if (result.gameOver) {
-                                    JOptionPane.showMessageDialog(f, "Player " + localPlayer.playerno + " has won", "Game over", JOptionPane.PLAIN_MESSAGE);
+                                if (incoming.gameOver) {
+                                    JOptionPane.showMessageDialog(f, "Player " + remotePlayer.playerno + " has won", "Game over", JOptionPane.PLAIN_MESSAGE);
                                     running = false;
                                     session.close();
                                     new LoadingScreen();
                                     f.dispose();
                                 } else {
                                     localTurn.set(true);
+                                    updateTurnLabel();
+                                }
+                            });
+                            continue;
+                        }
+
+                        OnlineProtocol.ShotResult shotResult = OnlineProtocol.parseShotResult(message);
+                        if (shotResult != null) {
+                            SwingUtilities.invokeLater(() -> {
+                                OnlineProtocol.paintShot(attackGrid, shotResult.row, shotResult.col, shotResult.hit);
+                                if (shotResult.sunkShipName != null) {
+                                    announcer.setVisible(true);
+                                    announcements.append(shotResult.sunkShipName + " of player " + remotePlayer.playerno + " sunk\n");
+                                }
+                                if (shotResult.gameOver) {
+                                    JOptionPane.showMessageDialog(f, "Player " + localPlayer.playerno + " has won", "Game over", JOptionPane.PLAIN_MESSAGE);
+                                    running = false;
+                                    session.close();
+                                    new LoadingScreen();
+                                    f.dispose();
+                                } else {
+                                    localTurn.set(false);
                                     updateTurnLabel();
                                 }
                             });

@@ -11,7 +11,12 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.security.SecureRandom;
+import java.util.Enumeration;
 
 public class LoadingScreen extends JFrame{
     private static final int DEFAULT_ONLINE_PORT = 5050;
@@ -149,9 +154,10 @@ public class LoadingScreen extends JFrame{
 
         String roomCode = generateRoomCode();
         activeRoomCode = roomCode;
+        String hostIp = getPreferredLocalIpv4();
 
         JDialog waitingDialog = new JDialog(parent, "Hosting Online Match", false);
-        waitingDialog.setSize(420, 220);
+        waitingDialog.setSize(520, 250);
         waitingDialog.setResizable(false);
         waitingDialog.setLocationRelativeTo(parent);
         waitingDialog.setLayout(null);
@@ -164,19 +170,25 @@ public class LoadingScreen extends JFrame{
         waitingDialog.add(title);
 
         JLabel codeLabel = new JLabel("Room code: " + roomCode, SwingConstants.CENTER);
-        codeLabel.setBounds(0, 60, 400, 30);
+        codeLabel.setBounds(0, 60, 500, 30);
         codeLabel.setForeground(Color.WHITE);
         codeLabel.setFont(new Font("Arial", Font.PLAIN, 16));
         waitingDialog.add(codeLabel);
 
+        JLabel endpointLabel = new JLabel("Connect using IP: " + hostIp + "   Port: " + port, SwingConstants.CENTER);
+        endpointLabel.setBounds(0, 90, 500, 30);
+        endpointLabel.setForeground(Color.WHITE);
+        endpointLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+        waitingDialog.add(endpointLabel);
+
         JLabel status = new JLabel("Starting server on port " + port + "...", SwingConstants.CENTER);
-        status.setBounds(0, 100, 400, 30);
+        status.setBounds(0, 125, 500, 30);
         status.setForeground(Color.WHITE);
         status.setFont(new Font("Arial", Font.PLAIN, 14));
         waitingDialog.add(status);
 
         JButton cancel = new JButton("Cancel");
-        cancel.setBounds(150, 140, 100, 25);
+        cancel.setBounds(205, 170, 100, 25);
         cancel.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 closeQuietly(activeOnlineSocket);
@@ -209,6 +221,7 @@ public class LoadingScreen extends JFrame{
                 String clientCode = reader.readLine();
                 if (clientCode != null && clientCode.trim().equalsIgnoreCase(roomCode)) {
                     writer.println("OK");
+                    socket.setSoTimeout(0);
                     updateStatus(status, "Client connected. Online session is ready.");
                     launchOnlinePlacement(parent, waitingDialog, true);
                 } else {
@@ -288,6 +301,7 @@ public class LoadingScreen extends JFrame{
                 String response = reader.readLine();
 
                 if ("OK".equalsIgnoreCase(response)) {
+                    socket.setSoTimeout(0);
                     activeOnlineSocket = socket;
                     updateStatus(status, "Connected successfully. Online session is ready.");
                     launchOnlinePlacement(parent, waitingDialog, false);
@@ -333,6 +347,33 @@ public class LoadingScreen extends JFrame{
             builder.append(alphabet.charAt(random.nextInt(alphabet.length())));
         }
         return builder.toString();
+    }
+
+    private static String getPreferredLocalIpv4() {
+        try {
+            Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
+            while (interfaces.hasMoreElements()) {
+                NetworkInterface networkInterface = interfaces.nextElement();
+                if (!networkInterface.isUp() || networkInterface.isLoopback() || networkInterface.isVirtual()) {
+                    continue;
+                }
+
+                Enumeration<InetAddress> addresses = networkInterface.getInetAddresses();
+                while (addresses.hasMoreElements()) {
+                    InetAddress address = addresses.nextElement();
+                    if (address instanceof Inet4Address && !address.isLoopbackAddress() && address.isSiteLocalAddress()) {
+                        return address.getHostAddress();
+                    }
+                }
+            }
+        } catch (SocketException ignored) {
+        }
+
+        try {
+            return InetAddress.getLocalHost().getHostAddress();
+        } catch (Exception ignored) {
+            return "Unavailable";
+        }
     }
 
     private static void updateStatus(JLabel label, String message) {

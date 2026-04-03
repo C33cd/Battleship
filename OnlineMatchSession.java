@@ -44,7 +44,7 @@ public class OnlineMatchSession implements Closeable {
         return !closed && socket != null && socket.isConnected() && !socket.isClosed();
     }
 
-    public synchronized void sendLine(String line) {
+    public void sendLine(String line) {
         if (!isOpen()) {
             return;
         }
@@ -52,7 +52,7 @@ public class OnlineMatchSession implements Closeable {
         writer.println(line);
     }
 
-    public synchronized String readLine() throws IOException {
+    public String readLine() throws IOException {
         if (!isOpen()) {
             return null;
         }

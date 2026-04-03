@@ -94,8 +94,8 @@ public final class OnlineProtocol {
         return new ShotMessage(coord[0], coord[1]);
     }
 
-    public static String serializeResult(ShotResult result) {
-        StringBuilder builder = new StringBuilder("RESULT|");
+    public static String serializeShotResult(ShotResult result) {
+        StringBuilder builder = new StringBuilder("SHOT_RESULT|");
         builder.append(result.row).append(",").append(result.col);
         builder.append("|").append(result.hit ? "HIT" : "MISS");
         builder.append("|").append(result.sunkShipName == null ? "NONE" : result.sunkShipName);
@@ -103,8 +103,38 @@ public final class OnlineProtocol {
         return builder.toString();
     }
 
-    public static ShotResult parseResult(String message) {
-        if (message == null || !message.startsWith("RESULT|")) {
+    public static String serializeIncomingAttack(ShotResult result) {
+        StringBuilder builder = new StringBuilder("INCOMING_ATTACK|");
+        builder.append(result.row).append(",").append(result.col);
+        builder.append("|").append(result.hit ? "HIT" : "MISS");
+        builder.append("|").append(result.sunkShipName == null ? "NONE" : result.sunkShipName);
+        builder.append("|").append(result.gameOver ? "WIN" : "CONTINUE");
+        return builder.toString();
+    }
+
+    public static ShotResult parseShotResult(String message) {
+        if (message == null || !message.startsWith("SHOT_RESULT|")) {
+            return null;
+        }
+
+        String[] parts = message.split("\\|");
+        if (parts.length != 5) {
+            return null;
+        }
+
+        int[] coord = parseCoordinate(parts[1]);
+        if (coord == null) {
+            return null;
+        }
+
+        boolean hit = "HIT".equalsIgnoreCase(parts[2]);
+        String sunkShipName = "NONE".equalsIgnoreCase(parts[3]) ? null : parts[3].trim();
+        boolean gameOver = "WIN".equalsIgnoreCase(parts[4]);
+        return new ShotResult(coord[0], coord[1], hit, sunkShipName, gameOver);
+    }
+
+    public static ShotResult parseIncomingAttack(String message) {
+        if (message == null || !message.startsWith("INCOMING_ATTACK|")) {
             return null;
         }
 
