@@ -59,7 +59,7 @@ public class OnlineGameScreen extends JFrame {
                         JOptionPane.YES_NO_CANCEL_OPTION);
                 switch (ch) {
                     case 0:
-                        endMatch("Match exited.", true, null, OnlineProtocol.serializeForfeit(localPlayer.playerno), null);
+                        endMatch("Match exited.", true, null, OnlineProtocol.serializeForfeit(localPlayer.name), null);
                         break;
                     case 1:
                     case 2:
@@ -75,15 +75,15 @@ public class OnlineGameScreen extends JFrame {
             public void windowIconified(WindowEvent e) {}
         });
 
-        JLabel localTitle = new JLabel("Your board", SwingConstants.CENTER);
+        JLabel localTitle = new JLabel(localPlayer.name + "'s board", SwingConstants.CENTER);
         localTitle.setBounds(200, 100, 400, 50);
         this.add(localTitle);
 
-        JLabel remoteTitle = new JLabel("Opponent board", SwingConstants.CENTER);
+        JLabel remoteTitle = new JLabel(remotePlayer.name + "'s board", SwingConstants.CENTER);
         remoteTitle.setBounds(1020, 100, 400, 50);
         this.add(remoteTitle);
 
-        turnLabel = new JLabel("Your turn", SwingConstants.CENTER);
+        turnLabel = new JLabel(localPlayer.name + "'s turn", SwingConstants.CENTER);
         turnLabel.setBounds(720, 100, 160, 30);
         this.add(turnLabel);
 
@@ -110,7 +110,7 @@ public class OnlineGameScreen extends JFrame {
         shoot.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (!localTurn.get()) {
-                    JOptionPane.showMessageDialog(f, "Please wait for your turn.", "Wait", JOptionPane.PLAIN_MESSAGE);
+                    JOptionPane.showMessageDialog(f, "Please wait for " + remotePlayer.name + "'s turn.", "Wait", JOptionPane.PLAIN_MESSAGE);
                     return;
                 }
 
@@ -135,13 +135,13 @@ public class OnlineGameScreen extends JFrame {
                     OnlineProtocol.paintShot(attackGrid, row, col, result.hit);
                     if (result.sunkShipName != null) {
                         announcer.setVisible(true);
-                        announcements.append(result.sunkShipName + " of player " + remotePlayer.playerno + " sunk\n");
+                        announcements.append(result.sunkShipName + " of " + remotePlayer.name + " sunk\n");
                     }
 
                     session.sendLine(OnlineProtocol.serializeIncomingAttack(result));
 
                     if (result.gameOver) {
-                        endMatch("You won the match.", true, localPlayer.playerno, OnlineProtocol.serializeMatchEnd(), null);
+                        endMatch(localPlayer.name + " won the match.", true, localPlayer.name, OnlineProtocol.serializeMatchEnd(), null);
                         return;
                     }
 
@@ -166,15 +166,15 @@ public class OnlineGameScreen extends JFrame {
                         break;
                     }
 
-                    Integer forfeitedPlayerNo = OnlineProtocol.parseForfeit(message);
-                    if (forfeitedPlayerNo != null) {
+                    String forfeitedPlayerName = OnlineProtocol.parseForfeit(message);
+                    if (forfeitedPlayerName != null) {
                         if (running && !matchEnded.get()) {
                             endMatch(
-                                    "Match ended. Player " + forfeitedPlayerNo + " forfeited.",
+                                    "Match ended. " + forfeitedPlayerName + " forfeited.",
                                     false,
                                     null,
                                     null,
-                                    "Player " + forfeitedPlayerNo + " forfeited. Match ended.");
+                                    forfeitedPlayerName + " forfeited. Match ended.");
                         }
                         break;
                     }
@@ -194,10 +194,10 @@ public class OnlineGameScreen extends JFrame {
                                 OnlineProtocol.paintShot(localDisplayGrid, shot.row, shot.col, result.hit);
                                 if (result.sunkShipName != null) {
                                     announcer.setVisible(true);
-                                    announcements.append(result.sunkShipName + " of player " + localPlayer.playerno + " sunk\n");
+                                    announcements.append(result.sunkShipName + " of " + localPlayer.name + " sunk\n");
                                 }
                                 if (result.gameOver) {
-                                    endMatch("You lost the match.", true, remotePlayer.playerno, OnlineProtocol.serializeMatchEnd(), null);
+                                    endMatch(remotePlayer.name + " won the match.", true, remotePlayer.name, OnlineProtocol.serializeMatchEnd(), null);
                                 } else {
                                     localTurn.set(true);
                                     updateTurnLabel();
@@ -212,10 +212,10 @@ public class OnlineGameScreen extends JFrame {
                                 OnlineProtocol.paintShot(localDisplayGrid, incoming.row, incoming.col, incoming.hit);
                                 if (incoming.sunkShipName != null) {
                                     announcer.setVisible(true);
-                                    announcements.append(incoming.sunkShipName + " of player " + localPlayer.playerno + " sunk\n");
+                                    announcements.append(incoming.sunkShipName + " of " + localPlayer.name + " sunk\n");
                                 }
                                 if (incoming.gameOver) {
-                                    endMatch("You lost the match.", true, remotePlayer.playerno, OnlineProtocol.serializeMatchEnd(), null);
+                                    endMatch(remotePlayer.name + " won the match.", true, remotePlayer.name, OnlineProtocol.serializeMatchEnd(), null);
                                 } else {
                                     localTurn.set(true);
                                     updateTurnLabel();
@@ -230,10 +230,10 @@ public class OnlineGameScreen extends JFrame {
                                 OnlineProtocol.paintShot(attackGrid, shotResult.row, shotResult.col, shotResult.hit);
                                 if (shotResult.sunkShipName != null) {
                                     announcer.setVisible(true);
-                                    announcements.append(shotResult.sunkShipName + " of player " + remotePlayer.playerno + " sunk\n");
+                                    announcements.append(shotResult.sunkShipName + " of " + remotePlayer.name + " sunk\n");
                                 }
                                 if (shotResult.gameOver) {
-                                    endMatch("You won the match.", true, localPlayer.playerno, OnlineProtocol.serializeMatchEnd(), null);
+                                    endMatch(localPlayer.name + " won the match.", true, localPlayer.name, OnlineProtocol.serializeMatchEnd(), null);
                                 } else {
                                     localTurn.set(false);
                                     updateTurnLabel();
@@ -256,7 +256,10 @@ public class OnlineGameScreen extends JFrame {
     }
 
     private void updateTurnLabel() {
-        SwingUtilities.invokeLater(() -> turnLabel.setText(localTurn.get() ? "Your turn" : "Waiting..."));
+        SwingUtilities.invokeLater(() -> {
+            String turnName = localTurn.get() ? localPlayer.name : remotePlayer.name;
+            turnLabel.setText(turnName + "'s turn");
+        });
     }
 
     private static ArrayList<Integer[]> getSelectedCoordinate(ButtonGrid grid) {
@@ -274,7 +277,7 @@ public class OnlineGameScreen extends JFrame {
         return coord;
     }
 
-    private void endMatch(String summary, boolean notifyPeer, Integer winnerPlayerNo, String peerEndMessage, String extraDialogMessage) {
+    private void endMatch(String summary, boolean notifyPeer, String winnerPlayerName, String peerEndMessage, String extraDialogMessage) {
         if (!matchEnded.compareAndSet(false, true)) {
             return;
         }
@@ -294,9 +297,9 @@ public class OnlineGameScreen extends JFrame {
         SwingUtilities.invokeLater(() -> {
             announcer.setVisible(true);
             announcements.append(summary + "\n");
-            if (winnerPlayerNo != null) {
+            if (winnerPlayerName != null) {
                 JOptionPane.showMessageDialog(this,
-                        "Player " + winnerPlayerNo + " has won",
+                        winnerPlayerName + " has won",
                         "Game over",
                         JOptionPane.PLAIN_MESSAGE);
             }

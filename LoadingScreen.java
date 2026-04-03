@@ -50,6 +50,9 @@ public class LoadingScreen extends JFrame{
         LoadingScreen f = this;
         play.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e){
+                if (!GameMain.ensureLocalSecondPlayerName()) {
+                    return;
+                }
                 new Player_ChoiceScreen(GameMain.p1);
                 f.dispose();
             }

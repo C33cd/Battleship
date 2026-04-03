@@ -60,7 +60,7 @@ public class OnlinePlacementScreen extends JFrame {
             public void windowIconified(WindowEvent e) {}
         });
 
-        JLabel title = new JLabel(host ? "Host placing ships" : "Client placing ships", SwingConstants.CENTER);
+        JLabel title = new JLabel(localPlayer.name+" placing ships", SwingConstants.CENTER);
         title.setBounds(200, 100, 400, 50);
         this.add(title);
 
@@ -243,6 +243,13 @@ public class OnlinePlacementScreen extends JFrame {
 
                 Thread syncThread = new Thread(() -> {
                     try {
+                        session.sendLine(OnlineProtocol.serializeIdentity(localPlayer.name));
+                        String remoteIdentity = session.readLine();
+                        String parsedRemoteName = OnlineProtocol.parseIdentity(remoteIdentity);
+                        if (parsedRemoteName != null) {
+                            remotePlayer.name = parsedRemoteName;
+                        }
+
                         session.sendLine(OnlineProtocol.serializePlacement(localPlayer));
                         String remotePlacement = session.readLine();
                         if (remotePlacement != null) {

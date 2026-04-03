@@ -76,6 +76,24 @@ public final class OnlineProtocol {
         return "SHOT|" + row + "," + col;
     }
 
+    public static String serializeIdentity(String playerName) {
+        return "NAME|" + playerName;
+    }
+
+    public static String parseIdentity(String message) {
+        if (message == null || !message.startsWith("NAME|")) {
+            return null;
+        }
+
+        String[] parts = message.split("\\|", 2);
+        if (parts.length != 2) {
+            return null;
+        }
+
+        String name = parts[1].trim();
+        return name.isEmpty() ? null : name;
+    }
+
     public static String serializeMatchEnd() {
         return "MATCH_END";
     }
@@ -84,25 +102,22 @@ public final class OnlineProtocol {
         return "MATCH_END".equalsIgnoreCase(message == null ? null : message.trim());
     }
 
-    public static String serializeForfeit(int quitterPlayerNo) {
-        return "FORFEIT|" + quitterPlayerNo;
+    public static String serializeForfeit(String quitterPlayerName) {
+        return "FORFEIT|" + quitterPlayerName;
     }
 
-    public static Integer parseForfeit(String message) {
+    public static String parseForfeit(String message) {
         if (message == null || !message.startsWith("FORFEIT|")) {
             return null;
         }
 
-        String[] parts = message.split("\\|");
+        String[] parts = message.split("\\|", 2);
         if (parts.length != 2) {
             return null;
         }
 
-        try {
-            return Integer.parseInt(parts[1].trim());
-        } catch (NumberFormatException ex) {
-            return null;
-        }
+        String playerName = parts[1].trim();
+        return playerName.isEmpty() ? null : playerName;
     }
 
     public static ShotMessage parseShot(String message) {
