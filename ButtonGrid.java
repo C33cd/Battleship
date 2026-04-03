@@ -1,5 +1,7 @@
 import javax.swing.*;
 import java.awt.Color;
+import java.awt.Font;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -31,6 +33,9 @@ public class ButtonGrid {
                 grid[i][j].setBounds(xt+(buttonLength*j), yt+(buttonHeight*i), buttonLength, buttonHeight);
                 grid[i][j].setOpaque(true);
                 grid[i][j].setBackground(Color.BLACK);
+                grid[i][j].setMargin(new Insets(0, 0, 0, 0));
+                grid[i][j].setFont(new Font("Dialog", Font.BOLD, 14));
+                grid[i][j].setFocusPainted(false);
                 final int i_c = i;
                 final int j_c = j; 
                 grid[i][j].addActionListener(new ActionListener() {

@@ -22,6 +22,7 @@ public class OnlineGameScreen extends JFrame {
     private final Player remotePlayer;
     private final boolean host;
     private final AtomicBoolean localTurn;
+    private final AtomicBoolean matchEnded;
     private volatile boolean running;
     private ButtonGrid localDisplayGrid;
     private ButtonGrid attackGrid;
@@ -35,6 +36,7 @@ public class OnlineGameScreen extends JFrame {
         this.remotePlayer = remotePlayer;
         this.host = host;
         this.localTurn = new AtomicBoolean(host);
+        this.matchEnded = new AtomicBoolean(false);
         this.running = true;
 
         this.setTitle(host ? "Online Game - Host" : "Online Game - Client");
@@ -134,16 +136,14 @@ public class OnlineGameScreen extends JFrame {
                         announcer.setVisible(true);
                         announcements.append(result.sunkShipName + " of player " + remotePlayer.playerno + " sunk\n");
                     }
+
+                    session.sendLine(OnlineProtocol.serializeIncomingAttack(result));
+
                     if (result.gameOver) {
-                        JOptionPane.showMessageDialog(f, "Player " + localPlayer.playerno + " has won", "Game over", JOptionPane.PLAIN_MESSAGE);
-                        running = false;
-                        session.close();
-                        new LoadingScreen();
-                        f.dispose();
+                        endMatch("You won the match.");
                         return;
                     }
 
-                    session.sendLine(OnlineProtocol.serializeIncomingAttack(result));
                     localTurn.set(false);
                     updateTurnLabel();
                 } else {
@@ -173,11 +173,7 @@ public class OnlineGameScreen extends JFrame {
                                     announcements.append(result.sunkShipName + " of player " + localPlayer.playerno + " sunk\n");
                                 }
                                 if (result.gameOver) {
-                                    JOptionPane.showMessageDialog(f, "Player " + remotePlayer.playerno + " has won", "Game over", JOptionPane.PLAIN_MESSAGE);
-                                    running = false;
-                                    session.close();
-                                    new LoadingScreen();
-                                    f.dispose();
+                                    endMatch("You lost the match.");
                                 } else {
                                     localTurn.set(true);
                                     updateTurnLabel();
@@ -195,11 +191,7 @@ public class OnlineGameScreen extends JFrame {
                                     announcements.append(incoming.sunkShipName + " of player " + localPlayer.playerno + " sunk\n");
                                 }
                                 if (incoming.gameOver) {
-                                    JOptionPane.showMessageDialog(f, "Player " + remotePlayer.playerno + " has won", "Game over", JOptionPane.PLAIN_MESSAGE);
-                                    running = false;
-                                    session.close();
-                                    new LoadingScreen();
-                                    f.dispose();
+                                    endMatch("You lost the match.");
                                 } else {
                                     localTurn.set(true);
                                     updateTurnLabel();
@@ -217,11 +209,7 @@ public class OnlineGameScreen extends JFrame {
                                     announcements.append(shotResult.sunkShipName + " of player " + remotePlayer.playerno + " sunk\n");
                                 }
                                 if (shotResult.gameOver) {
-                                    JOptionPane.showMessageDialog(f, "Player " + localPlayer.playerno + " has won", "Game over", JOptionPane.PLAIN_MESSAGE);
-                                    running = false;
-                                    session.close();
-                                    new LoadingScreen();
-                                    f.dispose();
+                                    endMatch("You won the match.");
                                 } else {
                                     localTurn.set(false);
                                     updateTurnLabel();
@@ -263,5 +251,20 @@ public class OnlineGameScreen extends JFrame {
             }
         }
         return coord;
+    }
+
+    private void endMatch(String summary) {
+        if (!matchEnded.compareAndSet(false, true)) {
+            return;
+        }
+
+        running = false;
+        SwingUtilities.invokeLater(() -> {
+            announcer.setVisible(true);
+            announcements.append(summary + "\n");
+            session.close();
+            dispose();
+            new LoadingScreen();
+        });
     }
 }
