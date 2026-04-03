@@ -53,10 +53,10 @@ public class GameScreen extends JFrame{
         shoot.setBounds(740,200,120,20); 
         this.add(shoot);
         
-        JLabel pl_1 = new JLabel("Player 1 choosing to shoot...", SwingConstants.CENTER);
+        JLabel pl_1 = new JLabel(GameMain.p1.name+" choosing to shoot...", SwingConstants.CENTER);
         pl_1.setBounds(200,100,420,50);
         this.add(pl_1);
-        JLabel pl_2 = new JLabel("Player 2 choosing to shoot...", SwingConstants.CENTER);
+        JLabel pl_2 = new JLabel(GameMain.p2.name+" choosing to shoot...", SwingConstants.CENTER);
         pl_2.setBounds(1020,100,420,50);
         this.add(pl_2);
 
@@ -101,14 +101,14 @@ public class GameScreen extends JFrame{
                                     //announce sinking
                                     passivePlayer.ships_lost++;
                                     announcer.setVisible(true);
-                                    announcements.append(passivePlayer.bt[i].type.getName()+" of player "+passivePlayer.playerno+" sunk\n");
+                                    announcements.append(passivePlayer.bt[i].type.getName()+" of "+passivePlayer.name+" sunk\n");
                                 }
                             }
                         }
                     }
                     //check if a player has lost all his ships or not
                     if(passivePlayer.ships_lost==5){
-                        JOptionPane.showMessageDialog(f, "Player "+controlPlayer.playerno+" has won", "Game over", JOptionPane.PLAIN_MESSAGE);                                      
+                        JOptionPane.showMessageDialog(f, controlPlayer.name+" has won", "Game over", JOptionPane.PLAIN_MESSAGE);                                      
                         new LoadingScreen();
                         f.dispose();
                     }

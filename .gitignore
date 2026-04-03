@@ -1,6 +1,7 @@
 *.class
 *.log
 *.ctxt
+*.txt
 /.idea/
 /.vscode/
 /bin/

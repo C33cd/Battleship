@@ -6,7 +6,7 @@ import java.awt.Toolkit;
 import javax.swing.*;
 public class Player_ChoiceScreen extends JFrame{
     public Player_ChoiceScreen(Player player){
-        this.setTitle("Player "+player.playerno+" Choice Grid");
+        this.setTitle(player.name+" Choice Grid");
         this.setVisible(true);
         this.setResizable(true);
         this.setSize(Toolkit.getDefaultToolkit().getScreenSize());
@@ -27,9 +27,9 @@ public class Player_ChoiceScreen extends JFrame{
             public void windowClosed(WindowEvent e){
                 //write an if conditonal for if player 1 close screen without completing selection
                 if(player.playerno==1)
-                    JOptionPane.showMessageDialog(f, "Your ships have been successfully placed. Please let player 2 make their arrangement of ships", "Success", JOptionPane.PLAIN_MESSAGE);
+                    JOptionPane.showMessageDialog(f, "Your ships have been successfully placed. Please let "+GameMain.p2.name+" make their arrangement of ships", "Success", JOptionPane.PLAIN_MESSAGE);
                 else if(player.playerno==2)
-                    JOptionPane.showMessageDialog(f, "Your ships have been successfully placed. You can call player 1 back to play. \nPlayer 1 starts first", "Success", JOptionPane.PLAIN_MESSAGE);
+                    JOptionPane.showMessageDialog(f, "Your ships have been successfully placed. You can call "+GameMain.p1.name+" back to play. \n"+GameMain.p1.name+" starts first", "Success", JOptionPane.PLAIN_MESSAGE);
 
             }
             public void windowDeactivated(WindowEvent e){} 
@@ -37,7 +37,7 @@ public class Player_ChoiceScreen extends JFrame{
 
         });
 
-        JLabel plab = new JLabel("Player "+player.playerno+" choosing", SwingConstants.CENTER);
+        JLabel plab = new JLabel(player.name+" choosing", SwingConstants.CENTER);
         //set font and fontsize. eg.: plab.setFont(new Font("Serif", Font.PLAIN, 14));
         
         //player 1 text: .setBounds(320,100,100,50);
