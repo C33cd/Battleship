@@ -1,5 +1,7 @@
 import javax.swing.*;
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.*;
 import java.io.BufferedReader;
@@ -68,24 +70,21 @@ public class LoadingScreen extends JFrame{
         rules.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e){
                 JFrame rules_popup = new JFrame("Rules of the game");
-                rules_popup.setBounds(800,100,515,600);//adjust height and width until the scrollbars show up
+                rules_popup.setBounds(800,100,515,600);
                 rules_popup.setVisible(true);
-                //rules_popup.setResizable(false);
                 rules_popup.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-                rules_popup.setLayout(null);
+                rules_popup.setLayout(new BorderLayout());
                 rules_popup.getContentPane().setBackground(Color.BLACK);
 
-                JLabel header  = new JLabel("Rules", SwingConstants.CENTER);//for center-aligned text
-                header.setBounds(0,0, 500,60);
+                JLabel header  = new JLabel("Rules", SwingConstants.CENTER);
                 header.setFont(new Font("Blackadder ITC", Font.BOLD, 50));
                 header.setForeground(Color.WHITE);
-                rules_popup.add(header);
+                header.setPreferredSize(new Dimension(500, 60));
+                rules_popup.add(header, BorderLayout.NORTH);
                 
                 JTextArea t1 = new JTextArea();
-                t1.setBounds(0,0, 1000, 500);
                 t1.setBackground(Color.BLACK);
                 t1.setForeground(Color.WHITE);
-                //Rules text: 
                 t1.setText("1. Battleship is a 2-player game\r\n" + //
                                         "2. Each player gets 5 ships\r\n" + //
                                         "3. the ships are of the following types:\r\n" + //
@@ -106,11 +105,12 @@ public class LoadingScreen extends JFrame{
                                         "");
                 t1.setFont(new Font("Times New Roman", Font.PLAIN, 20));
                 t1.setEditable(false);
-                JScrollPane p1 = new JScrollPane(t1, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-                p1.setBounds(0,70,500, 490);
+                t1.setLineWrap(true);
+                t1.setWrapStyleWord(true);
+                JScrollPane p1 = new JScrollPane(t1, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
                 p1.setBackground(Color.BLACK);
                 p1.setForeground(Color.WHITE);
-                rules_popup.add(p1);
+                rules_popup.add(p1, BorderLayout.CENTER);
 
 
 
