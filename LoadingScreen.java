@@ -16,7 +16,9 @@ import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.security.SecureRandom;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 
 public class LoadingScreen extends JFrame{
     private static final int DEFAULT_ONLINE_PORT = 5050;
@@ -154,7 +156,11 @@ public class LoadingScreen extends JFrame{
 
         String roomCode = generateRoomCode();
         activeRoomCode = roomCode;
-        String hostIp = getPreferredLocalIpv4();
+        String hostIp = promptForHostIp(parent);
+        if (hostIp == null) {
+            activeRoomCode = null;
+            return;
+        }
 
         JDialog waitingDialog = new JDialog(parent, "Hosting Online Match", false);
         waitingDialog.setSize(520, 250);
@@ -349,7 +355,34 @@ public class LoadingScreen extends JFrame{
         return builder.toString();
     }
 
-    private static String getPreferredLocalIpv4() {
+    private static String promptForHostIp(JFrame parent) {
+        List<String> addresses = getCandidateLocalIpv4s();
+        if (addresses.isEmpty()) {
+            JOptionPane.showMessageDialog(parent,
+                    "No suitable local IPv4 address was found.",
+                    "Network Error",
+                    JOptionPane.ERROR_MESSAGE);
+            return null;
+        }
+
+        if (addresses.size() == 1) {
+            return addresses.get(0);
+        }
+
+        Object selected = JOptionPane.showInputDialog(
+                parent,
+                "Select the IP address of the network shared with the other player:",
+                "Select Host IP",
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                addresses.toArray(new String[0]),
+                addresses.get(0));
+
+        return selected == null ? null : selected.toString();
+    }
+
+    private static List<String> getCandidateLocalIpv4s() {
+        List<String> ipList = new ArrayList<String>();
         try {
             Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
             while (interfaces.hasMoreElements()) {
@@ -358,22 +391,33 @@ public class LoadingScreen extends JFrame{
                     continue;
                 }
 
-                Enumeration<InetAddress> addresses = networkInterface.getInetAddresses();
-                while (addresses.hasMoreElements()) {
-                    InetAddress address = addresses.nextElement();
+                Enumeration<InetAddress> interfaceAddresses = networkInterface.getInetAddresses();
+                while (interfaceAddresses.hasMoreElements()) {
+                    InetAddress address = interfaceAddresses.nextElement();
                     if (address instanceof Inet4Address && !address.isLoopbackAddress() && address.isSiteLocalAddress()) {
-                        return address.getHostAddress();
+                        if (!address.isLinkLocalAddress()) {
+                            String ip = address.getHostAddress();
+                            if (!ipList.contains(ip)) {
+                                ipList.add(ip);
+                            }
+                        }
                     }
                 }
             }
         } catch (SocketException ignored) {
         }
 
-        try {
-            return InetAddress.getLocalHost().getHostAddress();
-        } catch (Exception ignored) {
-            return "Unavailable";
+        if (ipList.isEmpty()) {
+            try {
+                String fallback = InetAddress.getLocalHost().getHostAddress();
+                if (fallback != null && !fallback.trim().isEmpty()) {
+                    ipList.add(fallback);
+                }
+            } catch (Exception ignored) {
+            }
         }
+
+        return ipList;
     }
 
     private static void updateStatus(JLabel label, String message) {

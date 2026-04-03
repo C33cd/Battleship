@@ -159,6 +159,9 @@ public class OnlineGameScreen extends JFrame {
                 try {
                     String message = session.readLine();
                     if (message == null) {
+                        if (running && !matchEnded.get()) {
+                            endMatch("Match ended. Connection closed.");
+                        }
                         break;
                     }
 
@@ -218,11 +221,8 @@ public class OnlineGameScreen extends JFrame {
                         }
                     }
                 } catch (Exception ex) {
-                    if (running) {
-                        SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(f,
-                                "Network connection lost: " + ex.getMessage(),
-                                "Network Error",
-                                JOptionPane.ERROR_MESSAGE));
+                    if (running && !matchEnded.get()) {
+                        endMatch("Match ended. Connection lost.");
                     }
                     break;
                 }
