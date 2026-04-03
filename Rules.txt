@@ -1,0 +1,17 @@
+1. Battleship is a 2-player game
+2. Each player gets 5 ships
+3. the ships are of the following types:
+    (a) Patrol Boat (occupies 2 grid spaces)
+    (b) Submarine (occupies 3 grid spaces)
+    (c) Destroyer (occupies 3 grid spaces)
+    (d) Battleship (occupies 4 grid spaces)
+    (e) Carrier (occupies 5 grid spaces)
+4. Each player gets one ship of each kind to place on the grid.
+5. The ships are arranged on a 10x10 grid with columns labelled 1-10 and rows labelled A-J
+6. Each player has to keep his/her arrangement of ships secret from the other player
+7. After the grids are arranged, players take turns to shoot at the other player's grid
+8. Each player chooses one grid square to shoot at.
+9. If a ship is hit (ie. one of the grid squares which it occupies has been shot), then it is announced by the computer.
+10. If all the grid squares which a ship occupies is hit, then the ship sinks.
+11. The first player to have all their ships sunk loses the game. 
+

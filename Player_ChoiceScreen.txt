@@ -1,0 +1,4 @@
+Write code for"remove" for player 
+Write code to add a border around selected ships(if possible)
+Display the name of Battleship if the player hovers over selected square(to avoid confusion) (Probably requirs mouse adapter)
+Write an if conditional for the windowClosed event

@@ -1,0 +1,3 @@
+Write code for window listener, not to exit if no is clicked
+Write code to make scrollbar for announcements scroll to the bottom
+Write code to make a label across the scrreen announce instead of textbox (Requires threading to keep track of time; so not doing it rn)

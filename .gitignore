@@ -1,0 +1,8 @@
+*.class
+*.log
+*.ctxt
+/.idea/
+/.vscode/
+/bin/
+/out/
+/target/
