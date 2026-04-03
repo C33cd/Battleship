@@ -76,6 +76,14 @@ public final class OnlineProtocol {
         return "SHOT|" + row + "," + col;
     }
 
+    public static String serializeMatchEnd() {
+        return "MATCH_END";
+    }
+
+    public static boolean isMatchEnd(String message) {
+        return "MATCH_END".equalsIgnoreCase(message == null ? null : message.trim());
+    }
+
     public static ShotMessage parseShot(String message) {
         if (message == null || !message.startsWith("SHOT|")) {
             return null;

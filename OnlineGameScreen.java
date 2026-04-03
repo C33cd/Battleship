@@ -140,7 +140,7 @@ public class OnlineGameScreen extends JFrame {
                     session.sendLine(OnlineProtocol.serializeIncomingAttack(result));
 
                     if (result.gameOver) {
-                        endMatch("You won the match.");
+                        endMatch("You won the match.", true);
                         return;
                     }
 
@@ -160,7 +160,14 @@ public class OnlineGameScreen extends JFrame {
                     String message = session.readLine();
                     if (message == null) {
                         if (running && !matchEnded.get()) {
-                            endMatch("Match ended. Connection closed.");
+                            endMatch("Match ended. Connection closed.", false);
+                        }
+                        break;
+                    }
+
+                    if (OnlineProtocol.isMatchEnd(message)) {
+                        if (running && !matchEnded.get()) {
+                            endMatch("Match ended.", false);
                         }
                         break;
                     }
@@ -176,7 +183,7 @@ public class OnlineGameScreen extends JFrame {
                                     announcements.append(result.sunkShipName + " of player " + localPlayer.playerno + " sunk\n");
                                 }
                                 if (result.gameOver) {
-                                    endMatch("You lost the match.");
+                                    endMatch("You lost the match.", true);
                                 } else {
                                     localTurn.set(true);
                                     updateTurnLabel();
@@ -194,7 +201,7 @@ public class OnlineGameScreen extends JFrame {
                                     announcements.append(incoming.sunkShipName + " of player " + localPlayer.playerno + " sunk\n");
                                 }
                                 if (incoming.gameOver) {
-                                    endMatch("You lost the match.");
+                                    endMatch("You lost the match.", true);
                                 } else {
                                     localTurn.set(true);
                                     updateTurnLabel();
@@ -212,7 +219,7 @@ public class OnlineGameScreen extends JFrame {
                                     announcements.append(shotResult.sunkShipName + " of player " + remotePlayer.playerno + " sunk\n");
                                 }
                                 if (shotResult.gameOver) {
-                                    endMatch("You won the match.");
+                                    endMatch("You won the match.", true);
                                 } else {
                                     localTurn.set(false);
                                     updateTurnLabel();
@@ -222,7 +229,7 @@ public class OnlineGameScreen extends JFrame {
                     }
                 } catch (Exception ex) {
                     if (running && !matchEnded.get()) {
-                        endMatch("Match ended. Connection lost.");
+                        endMatch("Match ended. Connection lost.", false);
                     }
                     break;
                 }
@@ -253,16 +260,26 @@ public class OnlineGameScreen extends JFrame {
         return coord;
     }
 
-    private void endMatch(String summary) {
+    private void endMatch(String summary, boolean notifyPeer) {
         if (!matchEnded.compareAndSet(false, true)) {
             return;
         }
 
         running = false;
+        if (notifyPeer && session.isOpen()) {
+            try {
+                session.sendLine(OnlineProtocol.serializeMatchEnd());
+            } catch (Exception ignored) {
+            }
+        }
+
+        Thread closer = new Thread(() -> session.close(), "Battleship-OnlineSessionCloser");
+        closer.setDaemon(true);
+        closer.start();
+
         SwingUtilities.invokeLater(() -> {
             announcer.setVisible(true);
             announcements.append(summary + "\n");
-            session.close();
             dispose();
             new LoadingScreen();
         });

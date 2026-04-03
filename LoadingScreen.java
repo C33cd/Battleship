@@ -356,7 +356,7 @@ public class LoadingScreen extends JFrame{
     }
 
     private static String promptForHostIp(JFrame parent) {
-        List<String> addresses = getCandidateLocalIpv4s();
+        List<HostIpChoice> addresses = getCandidateLocalIpv4s();
         if (addresses.isEmpty()) {
             JOptionPane.showMessageDialog(parent,
                     "No suitable local IPv4 address was found.",
@@ -366,7 +366,7 @@ public class LoadingScreen extends JFrame{
         }
 
         if (addresses.size() == 1) {
-            return addresses.get(0);
+            return addresses.get(0).ip;
         }
 
         Object selected = JOptionPane.showInputDialog(
@@ -375,14 +375,18 @@ public class LoadingScreen extends JFrame{
                 "Select Host IP",
                 JOptionPane.QUESTION_MESSAGE,
                 null,
-                addresses.toArray(new String[0]),
+                addresses.toArray(new HostIpChoice[0]),
                 addresses.get(0));
 
-        return selected == null ? null : selected.toString();
+        if (selected == null) {
+            return null;
+        }
+
+        return ((HostIpChoice) selected).ip;
     }
 
-    private static List<String> getCandidateLocalIpv4s() {
-        List<String> ipList = new ArrayList<String>();
+    private static List<HostIpChoice> getCandidateLocalIpv4s() {
+        List<HostIpChoice> ipList = new ArrayList<HostIpChoice>();
         try {
             Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
             while (interfaces.hasMoreElements()) {
@@ -397,8 +401,12 @@ public class LoadingScreen extends JFrame{
                     if (address instanceof Inet4Address && !address.isLoopbackAddress() && address.isSiteLocalAddress()) {
                         if (!address.isLinkLocalAddress()) {
                             String ip = address.getHostAddress();
-                            if (!ipList.contains(ip)) {
-                                ipList.add(ip);
+                            if (!containsIp(ipList, ip)) {
+                                String interfaceName = networkInterface.getDisplayName();
+                                if (interfaceName == null || interfaceName.trim().isEmpty()) {
+                                    interfaceName = networkInterface.getName();
+                                }
+                                ipList.add(new HostIpChoice(interfaceName, ip));
                             }
                         }
                     }
@@ -411,13 +419,37 @@ public class LoadingScreen extends JFrame{
             try {
                 String fallback = InetAddress.getLocalHost().getHostAddress();
                 if (fallback != null && !fallback.trim().isEmpty()) {
-                    ipList.add(fallback);
+                    ipList.add(new HostIpChoice("Default", fallback));
                 }
             } catch (Exception ignored) {
             }
         }
 
         return ipList;
+    }
+
+    private static boolean containsIp(List<HostIpChoice> entries, String ip) {
+        for (int i = 0; i < entries.size(); i++) {
+            if (entries.get(i).ip.equals(ip)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static final class HostIpChoice {
+        private final String interfaceName;
+        private final String ip;
+
+        private HostIpChoice(String interfaceName, String ip) {
+            this.interfaceName = interfaceName;
+            this.ip = ip;
+        }
+
+        @Override
+        public String toString() {
+            return interfaceName + " - " + ip;
+        }
     }
 
     private static void updateStatus(JLabel label, String message) {
