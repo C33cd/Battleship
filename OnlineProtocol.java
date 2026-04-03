@@ -84,6 +84,27 @@ public final class OnlineProtocol {
         return "MATCH_END".equalsIgnoreCase(message == null ? null : message.trim());
     }
 
+    public static String serializeForfeit(int quitterPlayerNo) {
+        return "FORFEIT|" + quitterPlayerNo;
+    }
+
+    public static Integer parseForfeit(String message) {
+        if (message == null || !message.startsWith("FORFEIT|")) {
+            return null;
+        }
+
+        String[] parts = message.split("\\|");
+        if (parts.length != 2) {
+            return null;
+        }
+
+        try {
+            return Integer.parseInt(parts[1].trim());
+        } catch (NumberFormatException ex) {
+            return null;
+        }
+    }
+
     public static ShotMessage parseShot(String message) {
         if (message == null || !message.startsWith("SHOT|")) {
             return null;

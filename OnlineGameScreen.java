@@ -49,16 +49,17 @@ public class OnlineGameScreen extends JFrame {
         JFrame f = this;
         this.addWindowListener(new WindowListener() {
             public void windowClosing(WindowEvent e) {
+                if (matchEnded.get()) {
+                    return;
+                }
+
                 int ch = JOptionPane.showConfirmDialog(f,
                         "Are you sure you want to exit",
                         "Confirm exit",
                         JOptionPane.YES_NO_CANCEL_OPTION);
                 switch (ch) {
                     case 0:
-                        running = false;
-                        session.close();
-                        new LoadingScreen();
-                        f.dispose();
+                        endMatch("Match exited.", true, null, OnlineProtocol.serializeForfeit(localPlayer.playerno), null);
                         break;
                     case 1:
                     case 2:
@@ -140,7 +141,7 @@ public class OnlineGameScreen extends JFrame {
                     session.sendLine(OnlineProtocol.serializeIncomingAttack(result));
 
                     if (result.gameOver) {
-                        endMatch("You won the match.", true, localPlayer.playerno);
+                        endMatch("You won the match.", true, localPlayer.playerno, OnlineProtocol.serializeMatchEnd(), null);
                         return;
                     }
 
@@ -160,14 +161,27 @@ public class OnlineGameScreen extends JFrame {
                     String message = session.readLine();
                     if (message == null) {
                         if (running && !matchEnded.get()) {
-                            endMatch("Match ended. Connection closed.", false, null);
+                            endMatch("Match ended. Connection closed.", false, null, null, null);
+                        }
+                        break;
+                    }
+
+                    Integer forfeitedPlayerNo = OnlineProtocol.parseForfeit(message);
+                    if (forfeitedPlayerNo != null) {
+                        if (running && !matchEnded.get()) {
+                            endMatch(
+                                    "Match ended. Player " + forfeitedPlayerNo + " forfeited.",
+                                    false,
+                                    null,
+                                    null,
+                                    "Player " + forfeitedPlayerNo + " forfeited. Match ended.");
                         }
                         break;
                     }
 
                     if (OnlineProtocol.isMatchEnd(message)) {
                         if (running && !matchEnded.get()) {
-                            endMatch("Match ended.", false, null);
+                            endMatch("Match ended.", false, null, null, null);
                         }
                         break;
                     }
@@ -183,7 +197,7 @@ public class OnlineGameScreen extends JFrame {
                                     announcements.append(result.sunkShipName + " of player " + localPlayer.playerno + " sunk\n");
                                 }
                                 if (result.gameOver) {
-                                    endMatch("You lost the match.", true, remotePlayer.playerno);
+                                    endMatch("You lost the match.", true, remotePlayer.playerno, OnlineProtocol.serializeMatchEnd(), null);
                                 } else {
                                     localTurn.set(true);
                                     updateTurnLabel();
@@ -201,7 +215,7 @@ public class OnlineGameScreen extends JFrame {
                                     announcements.append(incoming.sunkShipName + " of player " + localPlayer.playerno + " sunk\n");
                                 }
                                 if (incoming.gameOver) {
-                                    endMatch("You lost the match.", true, remotePlayer.playerno);
+                                    endMatch("You lost the match.", true, remotePlayer.playerno, OnlineProtocol.serializeMatchEnd(), null);
                                 } else {
                                     localTurn.set(true);
                                     updateTurnLabel();
@@ -219,7 +233,7 @@ public class OnlineGameScreen extends JFrame {
                                     announcements.append(shotResult.sunkShipName + " of player " + remotePlayer.playerno + " sunk\n");
                                 }
                                 if (shotResult.gameOver) {
-                                    endMatch("You won the match.", true, localPlayer.playerno);
+                                    endMatch("You won the match.", true, localPlayer.playerno, OnlineProtocol.serializeMatchEnd(), null);
                                 } else {
                                     localTurn.set(false);
                                     updateTurnLabel();
@@ -229,7 +243,7 @@ public class OnlineGameScreen extends JFrame {
                     }
                 } catch (Exception ex) {
                     if (running && !matchEnded.get()) {
-                        endMatch("Match ended. Connection lost.", false, null);
+                        endMatch("Match ended. Connection lost.", false, null, null, null);
                     }
                     break;
                 }
@@ -260,7 +274,7 @@ public class OnlineGameScreen extends JFrame {
         return coord;
     }
 
-    private void endMatch(String summary, boolean notifyPeer, Integer winnerPlayerNo) {
+    private void endMatch(String summary, boolean notifyPeer, Integer winnerPlayerNo, String peerEndMessage, String extraDialogMessage) {
         if (!matchEnded.compareAndSet(false, true)) {
             return;
         }
@@ -268,7 +282,7 @@ public class OnlineGameScreen extends JFrame {
         running = false;
         if (notifyPeer && session.isOpen()) {
             try {
-                session.sendLine(OnlineProtocol.serializeMatchEnd());
+                session.sendLine(peerEndMessage == null ? OnlineProtocol.serializeMatchEnd() : peerEndMessage);
             } catch (Exception ignored) {
             }
         }
@@ -284,6 +298,12 @@ public class OnlineGameScreen extends JFrame {
                 JOptionPane.showMessageDialog(this,
                         "Player " + winnerPlayerNo + " has won",
                         "Game over",
+                        JOptionPane.PLAIN_MESSAGE);
+            }
+            if (extraDialogMessage != null) {
+                JOptionPane.showMessageDialog(this,
+                        extraDialogMessage,
+                        "Match ended",
                         JOptionPane.PLAIN_MESSAGE);
             }
             dispose();
