@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.Insets;
 import java.awt.event.*;
 import java.io.BufferedReader;
 import java.io.Closeable;
@@ -153,9 +154,13 @@ public class LoadingScreen extends JFrame{
         rulesText.setWrapStyleWord(true);
 
         JScrollPane scrollPane = new JScrollPane(rulesText,
-                JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+            JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.setBorder(BorderFactory.createEmptyBorder(0, 16, 16, 16));
+        scrollPane.setBackground(Color.BLACK);
+        scrollPane.getViewport().setBackground(Color.BLACK);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(18);
+        rulesText.setMargin(new Insets(6, 6, 6, 6));
         rulesDialog.add(scrollPane, BorderLayout.CENTER);
 
         rulesDialog.setSize(620, 720);
