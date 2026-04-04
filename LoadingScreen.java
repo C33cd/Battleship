@@ -151,7 +151,7 @@ public class LoadingScreen extends JFrame{
                 "9. If a ship is hit (ie. one of the grid squares which it occupies has been shot), then it is announced by the computer.\n" +
                 "10. If all the grid squares which a ship occupies is hit, then the ship sinks.\n" +
                 "11. The first player to have all their ships sunk loses the game.\n");
-        rulesText.setFont(new Font("Times New Roman", Font.PLAIN, 20));
+        rulesText.setFont(new Font("Book Antiqua", Font.PLAIN, 20));
         rulesText.setEditable(false);
         rulesText.setLineWrap(true);
         rulesText.setWrapStyleWord(true);

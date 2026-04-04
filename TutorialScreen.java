@@ -27,7 +27,7 @@ public class TutorialScreen extends JFrame {
     JTextArea content = new JTextArea();
     content.setBackground(Color.BLACK);
     content.setForeground(Color.WHITE);
-    content.setFont(new Font("Times New Roman", Font.PLAIN, 20));
+    content.setFont(new Font("Book Antiqua", Font.PLAIN, 20));
     content.setEditable(false);
     content.setLineWrap(true);
     content.setWrapStyleWord(true);
