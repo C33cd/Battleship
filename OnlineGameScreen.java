@@ -1,5 +1,10 @@
+import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Toolkit;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
@@ -7,10 +12,12 @@ import java.awt.event.WindowListener;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
@@ -20,7 +27,6 @@ public class OnlineGameScreen extends JFrame {
     private final OnlineMatchSession session;
     private final Player localPlayer;
     private final Player remotePlayer;
-    private final boolean host;
     private final AtomicBoolean localTurn;
     private final AtomicBoolean matchEnded;
     private volatile boolean running;
@@ -34,18 +40,17 @@ public class OnlineGameScreen extends JFrame {
         this.session = session;
         this.localPlayer = localPlayer;
         this.remotePlayer = remotePlayer;
-        this.host = host;
         this.localTurn = new AtomicBoolean(host);
         this.matchEnded = new AtomicBoolean(false);
         this.running = true;
 
         this.setTitle(host ? "Online Game - Host" : "Online Game - Client");
-        this.setResizable(true);
-        this.setSize(Toolkit.getDefaultToolkit().getScreenSize());
+        this.setResizable(false);
+        this.setSize(1360, 860);
+        this.setLocationRelativeTo(null);
         this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        this.setLayout(null);
-        
-        ScreenScaler.initialize();
+        this.setLayout(new BorderLayout());
+        ((JPanel) this.getContentPane()).setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
 
         JFrame f = this;
         this.addWindowListener(new WindowListener() {
@@ -76,37 +81,76 @@ public class OnlineGameScreen extends JFrame {
             public void windowIconified(WindowEvent e) {}
         });
 
-        JLabel localTitle = new JLabel(localPlayer.name + "'s board", SwingConstants.CENTER);
-        localTitle.setBounds(ScreenScaler.scaleX(200), ScreenScaler.scaleY(100), ScreenScaler.scaleX(400), ScreenScaler.scaleY(50));
-        this.add(localTitle);
-
-        JLabel remoteTitle = new JLabel(remotePlayer.name + "'s board", SwingConstants.CENTER);
-        remoteTitle.setBounds(ScreenScaler.scaleX(1020), ScreenScaler.scaleY(100), ScreenScaler.scaleX(400), ScreenScaler.scaleY(50));
-        this.add(remoteTitle);
-
-        turnLabel = new JLabel(localPlayer.name + "'s turn", SwingConstants.CENTER);
-        turnLabel.setBounds(ScreenScaler.scaleX(720), ScreenScaler.scaleY(100), ScreenScaler.scaleX(160), ScreenScaler.scaleY(30));
-        this.add(turnLabel);
-
-        localDisplayGrid = new ButtonGrid(this, ScreenScaler.scaleX(200), ScreenScaler.scaleY(200), ScreenScaler.scaleX(600), ScreenScaler.scaleY(600), ScreenScaler.scaleX(40), ScreenScaler.scaleY(40), false);
-        attackGrid = new ButtonGrid(this, ScreenScaler.scaleX(1020), ScreenScaler.scaleY(200), ScreenScaler.scaleX(1420), ScreenScaler.scaleY(600), ScreenScaler.scaleX(40), ScreenScaler.scaleY(40), true);
+        JPanel localBoardPanel = new JPanel();
+        JPanel attackBoardPanel = new JPanel();
+        localDisplayGrid = new ButtonGrid(localBoardPanel, false);
+        attackGrid = new ButtonGrid(attackBoardPanel, true);
 
         OnlineProtocol.paintPlacement(localDisplayGrid, localPlayer);
 
+        SquareBoardPanel localWrapper = new SquareBoardPanel(localBoardPanel, 320, 700);
+        SquareBoardPanel attackWrapper = new SquareBoardPanel(attackBoardPanel, 320, 700);
+
+        JLabel localTitle = new JLabel(localPlayer.name + "'s board", SwingConstants.CENTER);
+        JLabel remoteTitle = new JLabel(remotePlayer.name + "'s board", SwingConstants.CENTER);
+
+        JPanel leftColumn = new JPanel(new BorderLayout(0, 10));
+        leftColumn.add(localTitle, BorderLayout.NORTH);
+        leftColumn.add(localWrapper, BorderLayout.CENTER);
+
+        JPanel rightColumn = new JPanel(new BorderLayout(0, 10));
+        rightColumn.add(remoteTitle, BorderLayout.NORTH);
+        rightColumn.add(attackWrapper, BorderLayout.CENTER);
+
         JButton shoot = new JButton("Shoot");
-        shoot.setBounds(ScreenScaler.scaleX(740), ScreenScaler.scaleY(200), ScreenScaler.scaleX(120), ScreenScaler.scaleY(20));
-        this.add(shoot);
+        shoot.setFont(new Font("Dialog", Font.BOLD, 24));
+        shoot.setPreferredSize(new Dimension(220, 62));
+        turnLabel = new JLabel(localPlayer.name + "'s turn", SwingConstants.CENTER);
+        turnLabel.setFont(new Font("Dialog", Font.BOLD, 20));
 
         announcer = new JLabel("Announcements", SwingConstants.CENTER);
+        announcer.setFont(new Font("Dialog", Font.BOLD, 18));
         announcer.setVisible(false);
-        announcer.setBounds(ScreenScaler.scaleX(720), ScreenScaler.scaleY(260), ScreenScaler.scaleX(180), ScreenScaler.scaleY(20));
-        this.add(announcer);
 
-        announcements = new JTextArea("");
+        announcements = new JTextArea(10, 16);
         announcements.setEditable(false);
-        JScrollPane annScroller = new JScrollPane(announcements, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-        annScroller.setBounds(ScreenScaler.scaleX(720), ScreenScaler.scaleY(300), ScreenScaler.scaleX(180), ScreenScaler.scaleY(220));
-        this.add(annScroller);
+        JScrollPane annScroller = new JScrollPane(
+                announcements,
+                JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+
+        JPanel centerColumn = new JPanel(new BorderLayout(0, 10));
+        centerColumn.setPreferredSize(new Dimension(300, 10));
+        JPanel topActions = new JPanel(new BorderLayout(0, 8));
+        topActions.add(turnLabel, BorderLayout.NORTH);
+        topActions.add(shoot, BorderLayout.SOUTH);
+        centerColumn.add(topActions, BorderLayout.NORTH);
+
+        JPanel announcementPanel = new JPanel(new BorderLayout(0, 8));
+        announcementPanel.add(announcer, BorderLayout.NORTH);
+        announcementPanel.add(annScroller, BorderLayout.CENTER);
+        centerColumn.add(announcementPanel, BorderLayout.CENTER);
+
+        JPanel shell = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(0, 0, 0, 0);
+        gbc.fill = GridBagConstraints.BOTH;
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        shell.add(leftColumn, gbc);
+
+        gbc.gridx = 1;
+        gbc.weightx = 0.0;
+        shell.add(centerColumn, gbc);
+
+        gbc.gridx = 2;
+        gbc.weightx = 1.0;
+        shell.add(rightColumn, gbc);
+
+        this.add(shell, BorderLayout.CENTER);
 
         shoot.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {

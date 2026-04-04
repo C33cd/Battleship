@@ -1,5 +1,8 @@
+import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Toolkit;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
@@ -7,31 +10,27 @@ import java.awt.event.WindowListener;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
 public class OnlinePlacementScreen extends JFrame {
-    private final OnlineMatchSession session;
-    private final Player localPlayer;
-    private final Player remotePlayer;
-    private final boolean host;
-
     public OnlinePlacementScreen(OnlineMatchSession session, Player localPlayer, Player remotePlayer, boolean host) {
-        this.session = session;
-        this.localPlayer = localPlayer;
-        this.remotePlayer = remotePlayer;
-        this.host = host;
-
         this.setTitle(host ? "Online Placement - Host" : "Online Placement - Client");
         this.setResizable(true);
-        this.setSize(Toolkit.getDefaultToolkit().getScreenSize());
+        this.setSize(1220, 860);
+        this.setMinimumSize(new Dimension(1024, 720));
+        this.setLocationRelativeTo(null);
         this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        this.setLayout(null);
-        ScreenScaler.initialize();
+        this.setLayout(new BorderLayout(16, 16));
+        ((JPanel) this.getContentPane()).setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
 
         JFrame f = this;
         this.addWindowListener(new WindowListener() {
@@ -60,14 +59,47 @@ public class OnlinePlacementScreen extends JFrame {
             public void windowIconified(WindowEvent e) {}
         });
 
-        JLabel title = new JLabel(localPlayer.name+" placing ships", SwingConstants.CENTER);
-        title.setBounds(ScreenScaler.scaleX(200), ScreenScaler.scaleY(100), ScreenScaler.scaleX(400), ScreenScaler.scaleY(50));
-        this.add(title);
+        JLabel title = new JLabel(localPlayer.name + " placing ships", SwingConstants.CENTER);
+        this.add(title, BorderLayout.NORTH);
 
-        localPlayer.bgrid = new ButtonGrid(this, ScreenScaler.scaleX(200), ScreenScaler.scaleY(200), ScreenScaler.scaleX(600), ScreenScaler.scaleY(600), ScreenScaler.scaleX(40), ScreenScaler.scaleY(40), true);
+        JPanel boardGridPanel = new JPanel();
+        localPlayer.bgrid = new ButtonGrid(boardGridPanel, true);
+        SquareBoardPanel boardWrapper = new SquareBoardPanel(boardGridPanel, 320, 720);
 
         JButton place = new JButton("Place on grid");
-        place.setBounds(ScreenScaler.scaleX(720), ScreenScaler.scaleY(200), ScreenScaler.scaleX(120), ScreenScaler.scaleY(20));
+        JButton clearAll = new JButton("Clear all");
+        JButton done = new JButton("Done");
+
+        JPanel centerPanel = new JPanel(new BorderLayout(16, 16));
+        centerPanel.add(boardWrapper, BorderLayout.CENTER);
+
+        JPanel controls = new JPanel();
+        controls.setLayout(new BoxLayout(controls, BoxLayout.Y_AXIS));
+        controls.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+        controls.setPreferredSize(new Dimension(250, 10));
+        Font actionFont = new Font("Dialog", Font.BOLD, 26);
+        Dimension actionSize = new Dimension(220, 62);
+        place.setFont(actionFont);
+        place.setPreferredSize(actionSize);
+        place.setMaximumSize(actionSize);
+        clearAll.setFont(actionFont);
+        clearAll.setPreferredSize(actionSize);
+        clearAll.setMaximumSize(actionSize);
+        done.setFont(actionFont);
+        done.setPreferredSize(actionSize);
+        done.setMaximumSize(actionSize);
+        place.setAlignmentX(Component.CENTER_ALIGNMENT);
+        clearAll.setAlignmentX(Component.CENTER_ALIGNMENT);
+        done.setAlignmentX(Component.CENTER_ALIGNMENT);
+        controls.add(place);
+        controls.add(Box.createVerticalStrut(24));
+        controls.add(clearAll);
+        controls.add(Box.createVerticalStrut(24));
+        controls.add(done);
+
+        centerPanel.add(controls, BorderLayout.EAST);
+        this.add(centerPanel, BorderLayout.CENTER);
+
         localPlayer.bgrid.no_of_ships_placed = 0;
         place.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -202,11 +234,8 @@ public class OnlinePlacementScreen extends JFrame {
                 place.setBackground(null);
             }
         });
-        this.add(place);
 
-        JButton clear_all = new JButton("Clear all");
-        clear_all.setBounds(720, 440, 100, 20);
-        clear_all.addActionListener(new ActionListener() {
+        clearAll.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 localPlayer.bgrid.no_of_ships_placed = 0;
                 for (int i = 0; i < 10; i++) {
@@ -219,10 +248,7 @@ public class OnlinePlacementScreen extends JFrame {
                 }
             }
         });
-        this.add(clear_all);
 
-        JButton done = new JButton("Done");
-        done.setBounds(720, 700, 100, 20);
         done.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 int res = JOptionPane.showConfirmDialog(f, "Confirm your grid?", "Confirm", JOptionPane.YES_NO_CANCEL_OPTION);
@@ -232,14 +258,17 @@ public class OnlinePlacementScreen extends JFrame {
 
                 for (int i = 0; i < 5; i++) {
                     if (localPlayer.bt[i].gridCoord.isEmpty()) {
-                        JOptionPane.showConfirmDialog(f, "All ships have not been placed. Please place all ships first", "Error", JOptionPane.PLAIN_MESSAGE);
+                        JOptionPane.showConfirmDialog(f,
+                                "All ships have not been placed. Please place all ships first",
+                                "Error",
+                                JOptionPane.PLAIN_MESSAGE);
                         return;
                     }
                 }
 
                 done.setEnabled(false);
                 place.setEnabled(false);
-                clear_all.setEnabled(false);
+                clearAll.setEnabled(false);
 
                 Thread syncThread = new Thread(() -> {
                     try {
@@ -268,7 +297,7 @@ public class OnlinePlacementScreen extends JFrame {
                                     JOptionPane.ERROR_MESSAGE);
                             done.setEnabled(true);
                             place.setEnabled(true);
-                            clear_all.setEnabled(true);
+                            clearAll.setEnabled(true);
                         });
                     }
                 }, "Battleship-OnlinePlacementSync");
@@ -276,7 +305,6 @@ public class OnlinePlacementScreen extends JFrame {
                 syncThread.start();
             }
         });
-        this.add(done);
 
         this.setVisible(true);
     }

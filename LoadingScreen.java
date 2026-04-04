@@ -1,7 +1,8 @@
 import javax.swing.*;
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
+import java.awt.Component;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.*;
 import java.io.BufferedReader;
@@ -30,23 +31,31 @@ public class LoadingScreen extends JFrame{
     private static volatile String activeRoomCode;
 
     public LoadingScreen(){
-        ScreenScaler.initialize();
         this.setTitle("Battleship");
-        this.setBounds(ScreenScaler.scaleX(100),ScreenScaler.scaleY(100),ScreenScaler.scaleX(500),ScreenScaler.scaleY(500));
-        this.setResizable(false);
+        this.setSize(1000, 760);
+        this.setMinimumSize(new java.awt.Dimension(900, 680));
+        this.setLocationRelativeTo(null);
+        this.setResizable(true);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.setLayout(null);
+        this.setLayout(new BorderLayout(0, 24));
         this.getContentPane().setBackground(Color.BLACK);
 
         JLabel l = new JLabel("Battleship", SwingConstants.CENTER);
         l.setFont(new Font("Blackadder ITC", Font.PLAIN, 50));//for font
         l.setForeground(Color.WHITE);
-        l.setBounds(0,50,this.getWidth(),50);
-        this.add(l);
+        l.setBorder(BorderFactory.createEmptyBorder(30, 0, 10, 0));
+        this.add(l, BorderLayout.NORTH);
+
+        JPanel menuPanel = new JPanel();
+        menuPanel.setOpaque(false);
+        menuPanel.setLayout(new BoxLayout(menuPanel, BoxLayout.Y_AXIS));
+        menuPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 40, 0));
 
         JButton play = new JButton("Play");
-        play.setBounds(ScreenScaler.scaleX(200),ScreenScaler.scaleY(120),ScreenScaler.scaleX(100),ScreenScaler.scaleY(50));
-        this.add(play);
+        play.setFont(new Font("Dialog", Font.BOLD, 24));
+        play.setAlignmentX(Component.CENTER_ALIGNMENT);
+        play.setPreferredSize(new java.awt.Dimension(260, 58));
+        play.setMaximumSize(new java.awt.Dimension(260, 58));
         LoadingScreen f = this;
         play.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e){
@@ -57,80 +66,102 @@ public class LoadingScreen extends JFrame{
                 f.dispose();
             }
         });
+        menuPanel.add(play);
+        menuPanel.add(Box.createVerticalStrut(14));
 
         JButton online = new JButton("Play Online");
-        online.setBounds(ScreenScaler.scaleX(200),ScreenScaler.scaleY(190),ScreenScaler.scaleX(100),ScreenScaler.scaleY(50));
-        this.add(online);
+        online.setFont(new Font("Dialog", Font.BOLD, 24));
+        online.setAlignmentX(Component.CENTER_ALIGNMENT);
+        online.setPreferredSize(new java.awt.Dimension(260, 58));
+        online.setMaximumSize(new java.awt.Dimension(260, 58));
         online.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e){
                 showOnlineSetup(f);
             }
         });
+        menuPanel.add(online);
+        menuPanel.add(Box.createVerticalStrut(14));
 
         JButton rules = new JButton("Rules");
-        rules.setBounds(ScreenScaler.scaleX(200),ScreenScaler.scaleY(260),ScreenScaler.scaleX(100),ScreenScaler.scaleY(50));
-        this.add(rules);
+        rules.setFont(new Font("Dialog", Font.BOLD, 24));
+        rules.setAlignmentX(Component.CENTER_ALIGNMENT);
+        rules.setPreferredSize(new java.awt.Dimension(260, 58));
+        rules.setMaximumSize(new java.awt.Dimension(260, 58));
         rules.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e){
-                JFrame rules_popup = new JFrame("Rules of the game");
-                rules_popup.setBounds(ScreenScaler.scaleX(800),ScreenScaler.scaleY(100),ScreenScaler.scaleX(515),ScreenScaler.scaleY(600));
-                rules_popup.setVisible(true);
-                rules_popup.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-                rules_popup.setLayout(new BorderLayout());
-                rules_popup.getContentPane().setBackground(Color.BLACK);
-
-                JLabel header  = new JLabel("Rules", SwingConstants.CENTER);
-                header.setFont(new Font("Blackadder ITC", Font.BOLD, 50));
-                header.setForeground(Color.WHITE);
-                header.setPreferredSize(new Dimension(500, 60));
-                rules_popup.add(header, BorderLayout.NORTH);
-                
-                JTextArea t1 = new JTextArea();
-                t1.setBackground(Color.BLACK);
-                t1.setForeground(Color.WHITE);
-                t1.setText("1. Battleship is a 2-player game\r\n" + //
-                                        "2. Each player gets 5 ships\r\n" + //
-                                        "3. the ships are of the following types:\r\n" + //
-                                        "    (a) Patrol Boat (occupies 2 grid spaces)\r\n" + //
-                                        "    (b) Submarine (occupies 3 grid spaces)\r\n" + //
-                                        "    (c) Destroyer (occupies 3 grid spaces)\r\n" + //
-                                        "    (d) Battleship (occupies 4 grid spaces)\r\n" + //
-                                        "    (e) Carrier (occupies 5 grid spaces)\r\n" + //
-                                        "4. Each player gets one ship of each kind to place on the grid.\r\n" + //
-                                        "5. The ships are arranged on a 10x10 grid with columns labelled 1-10 and rows labelled A-J\r\n" + //
-                                        "6. Each player has to keep his/her arrangement of ships secret from the other player\r\n" + //
-                                        "7. After the grids are arranged, players take turns to shoot at the other player's grid\r\n" + //
-                                        "8. Each player chooses one grid square to shoot at.\r\n" + //
-                                        "9. If a ship is hit (ie. one of the grid squares which it occupies has been shot), then it is announced by the computer.\r\n" + //
-                                        "10. If all the grid squares which a ship occupies is hit, then the ship sinks.\r\n" + //
-                                        "11. The first player to have all their ships sunk loses the game. \r\n" + //
-                                        "\r\n" + //
-                                        "");
-                t1.setFont(new Font("Times New Roman", Font.PLAIN, 20));
-                t1.setEditable(false);
-                t1.setLineWrap(true);
-                t1.setWrapStyleWord(true);
-                JScrollPane p1 = new JScrollPane(t1, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-                p1.setBackground(Color.BLACK);
-                p1.setForeground(Color.WHITE);
-                rules_popup.add(p1, BorderLayout.CENTER);
-
-
-
-        
+                showRulesDialog(f);
             }
         });
+        menuPanel.add(rules);
+        menuPanel.add(Box.createVerticalStrut(14));
 
         JButton tutorial = new JButton("Tutorial");
-        tutorial.setBounds(ScreenScaler.scaleX(200),ScreenScaler.scaleY(330), ScreenScaler.scaleX(100), ScreenScaler.scaleY(50));
-        this.add(tutorial);
+        tutorial.setFont(new Font("Dialog", Font.BOLD, 24));
+        tutorial.setAlignmentX(Component.CENTER_ALIGNMENT);
+        tutorial.setPreferredSize(new java.awt.Dimension(260, 58));
+        tutorial.setMaximumSize(new java.awt.Dimension(260, 58));
         tutorial.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
                 new TutorialScreen();
             }
         });
+        menuPanel.add(tutorial);
+
+        JPanel center = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+        center.setOpaque(false);
+        center.add(menuPanel);
+        this.add(center, BorderLayout.CENTER);
         
         this.setVisible(true);
+    }
+
+    private static void showRulesDialog(JFrame parent) {
+        JDialog rulesDialog = new JDialog(parent, "Rules of the game", false);
+        rulesDialog.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        rulesDialog.setLayout(new BorderLayout(0, 12));
+        rulesDialog.getContentPane().setBackground(Color.BLACK);
+
+        JLabel header = new JLabel("Rules", SwingConstants.CENTER);
+        header.setFont(new Font("Blackadder ITC", Font.BOLD, 50));
+        header.setForeground(Color.WHITE);
+        header.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0));
+        rulesDialog.add(header, BorderLayout.NORTH);
+
+        JTextArea rulesText = new JTextArea();
+        rulesText.setBackground(Color.BLACK);
+        rulesText.setForeground(Color.WHITE);
+        rulesText.setText(
+                "1. Battleship is a 2-player game\n" +
+                "2. Each player gets 5 ships\n" +
+                "3. the ships are of the following types:\n" +
+                "    (a) Patrol Boat (occupies 2 grid spaces)\n" +
+                "    (b) Submarine (occupies 3 grid spaces)\n" +
+                "    (c) Destroyer (occupies 3 grid spaces)\n" +
+                "    (d) Battleship (occupies 4 grid spaces)\n" +
+                "    (e) Carrier (occupies 5 grid spaces)\n" +
+                "4. Each player gets one ship of each kind to place on the grid.\n" +
+                "5. The ships are arranged on a 10x10 grid with columns labelled 1-10 and rows labelled A-J\n" +
+                "6. Each player has to keep his/her arrangement of ships secret from the other player\n" +
+                "7. After the grids are arranged, players take turns to shoot at the other player's grid\n" +
+                "8. Each player chooses one grid square to shoot at.\n" +
+                "9. If a ship is hit (ie. one of the grid squares which it occupies has been shot), then it is announced by the computer.\n" +
+                "10. If all the grid squares which a ship occupies is hit, then the ship sinks.\n" +
+                "11. The first player to have all their ships sunk loses the game.\n");
+        rulesText.setFont(new Font("Times New Roman", Font.PLAIN, 20));
+        rulesText.setEditable(false);
+        rulesText.setLineWrap(true);
+        rulesText.setWrapStyleWord(true);
+
+        JScrollPane scrollPane = new JScrollPane(rulesText,
+                JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+                JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder(0, 16, 16, 16));
+        rulesDialog.add(scrollPane, BorderLayout.CENTER);
+
+        rulesDialog.setSize(620, 720);
+        rulesDialog.setMinimumSize(new java.awt.Dimension(480, 520));
+        rulesDialog.setLocationRelativeTo(parent);
+        rulesDialog.setVisible(true);
     }
 
     private static void showOnlineSetup(JFrame parent) {
@@ -167,38 +198,44 @@ public class LoadingScreen extends JFrame{
         }
 
         JDialog waitingDialog = new JDialog(parent, "Hosting Online Match", false);
-        waitingDialog.setSize(520, 250);
+        waitingDialog.setSize(560, 280);
         waitingDialog.setResizable(false);
         waitingDialog.setLocationRelativeTo(parent);
-        waitingDialog.setLayout(null);
+        waitingDialog.setLayout(new BorderLayout(0, 10));
         waitingDialog.getContentPane().setBackground(Color.BLACK);
+        JPanel infoPanel = new JPanel();
+        infoPanel.setOpaque(false);
+        infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
+        infoPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 6, 20));
 
         JLabel title = new JLabel("Waiting for player", SwingConstants.CENTER);
-        title.setBounds(0, ScreenScaler.scaleY(20), ScreenScaler.scaleX(400), ScreenScaler.scaleY(30));
+        title.setAlignmentX(Component.CENTER_ALIGNMENT);
         title.setForeground(Color.WHITE);
         title.setFont(new Font("Arial", Font.BOLD, 20));
-        waitingDialog.add(title);
+        infoPanel.add(title);
+        infoPanel.add(Box.createVerticalStrut(10));
 
         JLabel codeLabel = new JLabel("Room code: " + roomCode, SwingConstants.CENTER);
-        codeLabel.setBounds(0, ScreenScaler.scaleY(60), ScreenScaler.scaleX(500), ScreenScaler.scaleY(30));
+        codeLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         codeLabel.setForeground(Color.WHITE);
         codeLabel.setFont(new Font("Arial", Font.PLAIN, 16));
-        waitingDialog.add(codeLabel);
+        infoPanel.add(codeLabel);
+        infoPanel.add(Box.createVerticalStrut(8));
 
         JLabel endpointLabel = new JLabel("Connect using IP: " + hostIp + "   Port: " + port, SwingConstants.CENTER);
-        endpointLabel.setBounds(0, ScreenScaler.scaleY(90), ScreenScaler.scaleX(500), ScreenScaler.scaleY(30));
+        endpointLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         endpointLabel.setForeground(Color.WHITE);
         endpointLabel.setFont(new Font("Arial", Font.PLAIN, 14));
-        waitingDialog.add(endpointLabel);
+        infoPanel.add(endpointLabel);
+        infoPanel.add(Box.createVerticalStrut(10));
 
         JLabel status = new JLabel("Starting server on port " + port + "...", SwingConstants.CENTER);
-        status.setBounds(0, ScreenScaler.scaleY(125), ScreenScaler.scaleX(500), ScreenScaler.scaleY(30));
+        status.setAlignmentX(Component.CENTER_ALIGNMENT);
         status.setForeground(Color.WHITE);
         status.setFont(new Font("Arial", Font.PLAIN, 14));
-        waitingDialog.add(status);
+        infoPanel.add(status);
 
         JButton cancel = new JButton("Cancel");
-        cancel.setBounds(ScreenScaler.scaleX(205), ScreenScaler.scaleY(170), ScreenScaler.scaleX(100), ScreenScaler.scaleY(25));
         cancel.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 closeQuietly(activeOnlineSocket);
@@ -209,7 +246,13 @@ public class LoadingScreen extends JFrame{
                 waitingDialog.dispose();
             }
         });
-        waitingDialog.add(cancel);
+        JPanel actionsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+        actionsPanel.setOpaque(false);
+        actionsPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 16, 0));
+        actionsPanel.add(cancel);
+
+        waitingDialog.add(infoPanel, BorderLayout.CENTER);
+        waitingDialog.add(actionsPanel, BorderLayout.SOUTH);
 
         waitingDialog.setVisible(true);
 
@@ -274,20 +317,23 @@ public class LoadingScreen extends JFrame{
         }
 
         JDialog waitingDialog = new JDialog(parent, "Joining Online Match", false);
-        waitingDialog.setSize(420, 180);
+        waitingDialog.setSize(460, 220);
         waitingDialog.setResizable(false);
         waitingDialog.setLocationRelativeTo(parent);
-        waitingDialog.setLayout(null);
+        waitingDialog.setLayout(new BorderLayout(0, 8));
         waitingDialog.getContentPane().setBackground(Color.BLACK);
+        JPanel content = new JPanel();
+        content.setOpaque(false);
+        content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
+        content.setBorder(BorderFactory.createEmptyBorder(24, 20, 0, 20));
 
         JLabel status = new JLabel("Connecting to " + hostAddress.trim() + ":" + port + "...", SwingConstants.CENTER);
-        status.setBounds(0, ScreenScaler.scaleY(40), ScreenScaler.scaleX(400), ScreenScaler.scaleY(30));
+        status.setAlignmentX(Component.CENTER_ALIGNMENT);
         status.setForeground(Color.WHITE);
         status.setFont(new Font("Arial", Font.PLAIN, 14));
-        waitingDialog.add(status);
+        content.add(status);
 
         JButton cancel = new JButton("Cancel");
-        cancel.setBounds(ScreenScaler.scaleX(150), ScreenScaler.scaleY(90), ScreenScaler.scaleX(100), ScreenScaler.scaleY(25));
         cancel.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 closeQuietly(activeOnlineSocket);
@@ -295,7 +341,13 @@ public class LoadingScreen extends JFrame{
                 waitingDialog.dispose();
             }
         });
-        waitingDialog.add(cancel);
+        JPanel actionsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+        actionsPanel.setOpaque(false);
+        actionsPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 18, 0));
+        actionsPanel.add(cancel);
+
+        waitingDialog.add(content, BorderLayout.CENTER);
+        waitingDialog.add(actionsPanel, BorderLayout.SOUTH);
 
         waitingDialog.setVisible(true);
 

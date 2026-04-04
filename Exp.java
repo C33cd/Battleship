@@ -4,7 +4,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import javax.swing.*;
-import javax.swing.event.MouseInputListener;
 public class Exp extends JFrame{
     public Exp(){
         ScreenScaler.initialize();
