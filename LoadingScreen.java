@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.net.DatagramSocket;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
@@ -21,6 +22,8 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.List;
 
@@ -426,10 +429,6 @@ public class LoadingScreen extends JFrame{
             return null;
         }
 
-        if (addresses.size() == 1) {
-            return addresses.get(0).ip;
-        }
-
         Object selected = JOptionPane.showInputDialog(
                 parent,
                 "Select the IP address of the network shared with the other player:",
@@ -448,6 +447,7 @@ public class LoadingScreen extends JFrame{
 
     private static List<HostIpChoice> getCandidateLocalIpv4s() {
         List<HostIpChoice> ipList = new ArrayList<HostIpChoice>();
+        final String preferredIp = getPreferredOutboundIpv4();
         try {
             Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
             while (interfaces.hasMoreElements()) {
@@ -467,7 +467,8 @@ public class LoadingScreen extends JFrame{
                                 if (interfaceName == null || interfaceName.trim().isEmpty()) {
                                     interfaceName = networkInterface.getName();
                                 }
-                                ipList.add(new HostIpChoice(interfaceName, ip));
+                                int score = getInterfaceScore(networkInterface, ip, preferredIp);
+                                ipList.add(new HostIpChoice(interfaceName, ip, score));
                             }
                         }
                     }
@@ -476,17 +477,76 @@ public class LoadingScreen extends JFrame{
         } catch (SocketException ignored) {
         }
 
+        if (!ipList.isEmpty()) {
+            Collections.sort(ipList, new Comparator<HostIpChoice>() {
+                @Override
+                public int compare(HostIpChoice left, HostIpChoice right) {
+                    if (left.score != right.score) {
+                        return right.score - left.score;
+                    }
+                    return left.interfaceName.compareToIgnoreCase(right.interfaceName);
+                }
+            });
+        }
+
         if (ipList.isEmpty()) {
             try {
                 String fallback = InetAddress.getLocalHost().getHostAddress();
                 if (fallback != null && !fallback.trim().isEmpty()) {
-                    ipList.add(new HostIpChoice("Default", fallback));
+                    ipList.add(new HostIpChoice("Default", fallback, 0));
                 }
             } catch (Exception ignored) {
             }
         }
 
         return ipList;
+    }
+
+    private static String getPreferredOutboundIpv4() {
+        try (DatagramSocket socket = new DatagramSocket()) {
+            socket.connect(InetAddress.getByName("8.8.8.8"), 53);
+            InetAddress localAddress = socket.getLocalAddress();
+            if (localAddress instanceof Inet4Address && !localAddress.isAnyLocalAddress() && !localAddress.isLoopbackAddress()) {
+                return localAddress.getHostAddress();
+            }
+        } catch (Exception ignored) {
+        }
+        return null;
+    }
+
+    private static int getInterfaceScore(NetworkInterface networkInterface, String ip, String preferredIp) {
+        int score = 0;
+
+        String name = networkInterface.getName();
+        String displayName = networkInterface.getDisplayName();
+        String combinedName = ((name == null ? "" : name) + " " + (displayName == null ? "" : displayName)).toLowerCase();
+
+        if (preferredIp != null && preferredIp.equals(ip)) {
+            score += 1000;
+        }
+
+        if (combinedName.contains("wlan") || combinedName.contains("wifi") || combinedName.contains("wi-fi")
+                || combinedName.contains("eth") || combinedName.contains("enp") || combinedName.contains("eno")) {
+            score += 200;
+        }
+
+        if (combinedName.contains("docker") || combinedName.contains("veth") || combinedName.contains("virbr")
+                || combinedName.contains("vmnet") || combinedName.contains("br-") || combinedName.contains("cni")
+                || combinedName.contains("zt") || combinedName.contains("tun") || combinedName.contains("tap")) {
+            score -= 300;
+        }
+
+        try {
+            if (networkInterface.isPointToPoint()) {
+                score -= 150;
+            }
+            if (networkInterface.supportsMulticast()) {
+                score += 20;
+            }
+        } catch (SocketException ignored) {
+        }
+
+        return score;
     }
 
     private static boolean containsIp(List<HostIpChoice> entries, String ip) {
@@ -501,10 +561,12 @@ public class LoadingScreen extends JFrame{
     private static final class HostIpChoice {
         private final String interfaceName;
         private final String ip;
+        private final int score;
 
-        private HostIpChoice(String interfaceName, String ip) {
+        private HostIpChoice(String interfaceName, String ip, int score) {
             this.interfaceName = interfaceName;
             this.ip = ip;
+            this.score = score;
         }
 
         @Override
