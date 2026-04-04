@@ -83,7 +83,7 @@ public class OnlinePlacementScreen extends JFrame {
         controls.setLayout(new BoxLayout(controls, BoxLayout.Y_AXIS));
         controls.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
         controls.setPreferredSize(new Dimension(250, 10));
-        Font actionFont = new Font("Dialog", Font.BOLD, 26);
+        Font actionFont = AppFonts.uiBold(26f);
         Dimension actionSize = new Dimension(220, 62);
         place.setFont(actionFont);
         place.setPreferredSize(actionSize);

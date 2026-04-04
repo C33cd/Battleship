@@ -87,12 +87,12 @@ public class GameScreen extends JFrame {
         rightColumn.add(rightBoardWrapper, BorderLayout.CENTER);
 
         JButton shoot = new JButton("Shoot");
-        shoot.setFont(new Font("Dialog", Font.BOLD, 24));
+        shoot.setFont(AppFonts.uiBold(24f));
         shoot.setPreferredSize(new Dimension(220, 62));
         JLabel turnLabel = new JLabel(GameMain.p1.name + "'s turn", SwingConstants.CENTER);
-        turnLabel.setFont(new Font("Dialog", Font.BOLD, 20));
+        turnLabel.setFont(AppFonts.uiBold(20f));
         JLabel announcer = new JLabel("Announcements", SwingConstants.CENTER);
-        announcer.setFont(new Font("Dialog", Font.BOLD, 18));
+        announcer.setFont(AppFonts.uiBold(18f));
         announcer.setVisible(false);
 
         JTextArea announcements = new JTextArea(10, 16);

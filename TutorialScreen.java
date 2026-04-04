@@ -19,7 +19,7 @@ public class TutorialScreen extends JFrame {
     this.getContentPane().setBackground(Color.BLACK);
 
         JLabel header = new JLabel("Tutorial", SwingConstants.CENTER);
-    header.setFont(new Font("Blackadder ITC", Font.BOLD, 50));
+    header.setFont(AppFonts.heading(Font.BOLD, 50f));
     header.setForeground(Color.WHITE);
     header.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0));
         this.add(header, BorderLayout.NORTH);
@@ -27,7 +27,7 @@ public class TutorialScreen extends JFrame {
     JTextArea content = new JTextArea();
     content.setBackground(Color.BLACK);
     content.setForeground(Color.WHITE);
-    content.setFont(new Font("Book Antiqua", Font.PLAIN, 20));
+    content.setFont(AppFonts.body(Font.PLAIN, 20f));
     content.setEditable(false);
     content.setLineWrap(true);
     content.setWrapStyleWord(true);

@@ -45,7 +45,7 @@ public class LoadingScreen extends JFrame{
         this.getContentPane().setBackground(Color.BLACK);
 
         JLabel l = new JLabel("Battleship", SwingConstants.CENTER);
-        l.setFont(new Font("Blackadder ITC", Font.PLAIN, 50));//for font
+        l.setFont(AppFonts.heading(Font.PLAIN, 50f));//for font
         l.setForeground(Color.WHITE);
         l.setBorder(BorderFactory.createEmptyBorder(30, 0, 10, 0));
         this.add(l, BorderLayout.NORTH);
@@ -56,7 +56,7 @@ public class LoadingScreen extends JFrame{
         menuPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 40, 0));
 
         JButton play = new JButton("Play");
-        play.setFont(new Font("Dialog", Font.BOLD, 24));
+        play.setFont(AppFonts.uiBold(24f));
         play.setAlignmentX(Component.CENTER_ALIGNMENT);
         play.setPreferredSize(new java.awt.Dimension(260, 58));
         play.setMaximumSize(new java.awt.Dimension(260, 58));
@@ -74,7 +74,7 @@ public class LoadingScreen extends JFrame{
         menuPanel.add(Box.createVerticalStrut(14));
 
         JButton online = new JButton("Play Online");
-        online.setFont(new Font("Dialog", Font.BOLD, 24));
+        online.setFont(AppFonts.uiBold(24f));
         online.setAlignmentX(Component.CENTER_ALIGNMENT);
         online.setPreferredSize(new java.awt.Dimension(260, 58));
         online.setMaximumSize(new java.awt.Dimension(260, 58));
@@ -87,7 +87,7 @@ public class LoadingScreen extends JFrame{
         menuPanel.add(Box.createVerticalStrut(14));
 
         JButton rules = new JButton("Rules");
-        rules.setFont(new Font("Dialog", Font.BOLD, 24));
+        rules.setFont(AppFonts.uiBold(24f));
         rules.setAlignmentX(Component.CENTER_ALIGNMENT);
         rules.setPreferredSize(new java.awt.Dimension(260, 58));
         rules.setMaximumSize(new java.awt.Dimension(260, 58));
@@ -100,7 +100,7 @@ public class LoadingScreen extends JFrame{
         menuPanel.add(Box.createVerticalStrut(14));
 
         JButton tutorial = new JButton("Tutorial");
-        tutorial.setFont(new Font("Dialog", Font.BOLD, 24));
+        tutorial.setFont(AppFonts.uiBold(24f));
         tutorial.setAlignmentX(Component.CENTER_ALIGNMENT);
         tutorial.setPreferredSize(new java.awt.Dimension(260, 58));
         tutorial.setMaximumSize(new java.awt.Dimension(260, 58));
@@ -126,7 +126,7 @@ public class LoadingScreen extends JFrame{
         rulesDialog.getContentPane().setBackground(Color.BLACK);
 
         JLabel header = new JLabel("Rules", SwingConstants.CENTER);
-        header.setFont(new Font("Blackadder ITC", Font.BOLD, 50));
+        header.setFont(AppFonts.heading(Font.BOLD, 50f));
         header.setForeground(Color.WHITE);
         header.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0));
         rulesDialog.add(header, BorderLayout.NORTH);
@@ -151,7 +151,7 @@ public class LoadingScreen extends JFrame{
                 "9. If a ship is hit (ie. one of the grid squares which it occupies has been shot), then it is announced by the computer.\n" +
                 "10. If all the grid squares which a ship occupies is hit, then the ship sinks.\n" +
                 "11. The first player to have all their ships sunk loses the game.\n");
-        rulesText.setFont(new Font("Book Antiqua", Font.PLAIN, 20));
+        rulesText.setFont(AppFonts.body(Font.PLAIN, 20f));
         rulesText.setEditable(false);
         rulesText.setLineWrap(true);
         rulesText.setWrapStyleWord(true);
@@ -219,28 +219,28 @@ public class LoadingScreen extends JFrame{
         JLabel title = new JLabel("Waiting for player", SwingConstants.CENTER);
         title.setAlignmentX(Component.CENTER_ALIGNMENT);
         title.setForeground(Color.WHITE);
-        title.setFont(new Font("Arial", Font.BOLD, 20));
+        title.setFont(AppFonts.uiBold(20f));
         infoPanel.add(title);
         infoPanel.add(Box.createVerticalStrut(10));
 
         JLabel codeLabel = new JLabel("Room code: " + roomCode, SwingConstants.CENTER);
         codeLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         codeLabel.setForeground(Color.WHITE);
-        codeLabel.setFont(new Font("Arial", Font.PLAIN, 16));
+        codeLabel.setFont(AppFonts.ui(Font.PLAIN, 16f));
         infoPanel.add(codeLabel);
         infoPanel.add(Box.createVerticalStrut(8));
 
         JLabel endpointLabel = new JLabel("Connect using IP: " + hostIp + "   Port: " + port, SwingConstants.CENTER);
         endpointLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         endpointLabel.setForeground(Color.WHITE);
-        endpointLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+        endpointLabel.setFont(AppFonts.ui(Font.PLAIN, 14f));
         infoPanel.add(endpointLabel);
         infoPanel.add(Box.createVerticalStrut(10));
 
         JLabel status = new JLabel("Starting server on port " + port + "...", SwingConstants.CENTER);
         status.setAlignmentX(Component.CENTER_ALIGNMENT);
         status.setForeground(Color.WHITE);
-        status.setFont(new Font("Arial", Font.PLAIN, 14));
+        status.setFont(AppFonts.ui(Font.PLAIN, 14f));
         infoPanel.add(status);
 
         JButton cancel = new JButton("Cancel");
@@ -338,7 +338,7 @@ public class LoadingScreen extends JFrame{
         JLabel status = new JLabel("Connecting to " + hostAddress.trim() + ":" + port + "...", SwingConstants.CENTER);
         status.setAlignmentX(Component.CENTER_ALIGNMENT);
         status.setForeground(Color.WHITE);
-        status.setFont(new Font("Arial", Font.PLAIN, 14));
+        status.setFont(AppFonts.ui(Font.PLAIN, 14f));
         content.add(status);
 
         JButton cancel = new JButton("Cancel");

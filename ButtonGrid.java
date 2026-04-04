@@ -40,7 +40,7 @@ public class ButtonGrid {
                 grid[i][j].setMargin(new Insets(0, 0, 0, 0));
                 grid[i][j].setBorderPainted(true);
                 grid[i][j].setContentAreaFilled(true);
-                grid[i][j].setFont(new Font("Dialog", Font.BOLD, 14));
+                grid[i][j].setFont(AppFonts.uiBold(14f));
                 grid[i][j].setFocusPainted(false);
                 final int i_c = i;
                 final int j_c = j; 

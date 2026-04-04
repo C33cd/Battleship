@@ -109,13 +109,13 @@ public class OnlineGameScreen extends JFrame {
         rightColumn.add(attackWrapper, BorderLayout.CENTER);
 
         JButton shoot = new JButton("Shoot");
-        shoot.setFont(new Font("Dialog", Font.BOLD, 24));
+        shoot.setFont(AppFonts.uiBold(24f));
         shoot.setPreferredSize(new Dimension(220, 62));
         turnLabel = new JLabel(localPlayer.name + "'s turn", SwingConstants.CENTER);
-        turnLabel.setFont(new Font("Dialog", Font.BOLD, 20));
+        turnLabel.setFont(AppFonts.uiBold(20f));
 
         announcer = new JLabel("Announcements", SwingConstants.CENTER);
-        announcer.setFont(new Font("Dialog", Font.BOLD, 18));
+        announcer.setFont(AppFonts.uiBold(18f));
         announcer.setVisible(false);
 
         announcements = new JTextArea(10, 16);
