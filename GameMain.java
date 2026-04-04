@@ -1,4 +1,7 @@
 import javax.swing.JOptionPane;
+import javax.swing.ToolTipManager;
+
+
 
 public class GameMain{
     static Player p1;
@@ -9,6 +12,9 @@ public class GameMain{
         String p1Name = promptForName("Enter Player 1 username:", "Player 1");
         p1 = new Player(1, p1Name);
         p2 = new Player(2, REMOTE_PLAYER_FALLBACK);
+        ToolTipManager.sharedInstance().setInitialDelay(0);   // show immediately
+        ToolTipManager.sharedInstance().setReshowDelay(0);    // no delay between tooltips
+        ToolTipManager.sharedInstance().setDismissDelay(2000); // optional: keep visible longer
         new LoadingScreen();
         //new GameScreen();//temporarily, for testing
     }
