@@ -12,6 +12,7 @@ public class Player_ChoiceScreen extends JFrame{
         this.setSize(Toolkit.getDefaultToolkit().getScreenSize());
         this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         this.setLayout(null);
+        ScreenScaler.initialize();
 
         JFrame f = this;//used whenever we want to refer to cuurent frame in ActionListener
 
@@ -46,13 +47,13 @@ public class Player_ChoiceScreen extends JFrame{
 
         
         if(player.playerno==1){
-            player.bgrid = new ButtonGrid(this, 200, 200, 600, 600, 40, 40, true);
-            plab.setBounds(200,100,400,50);
+            player.bgrid = new ButtonGrid(this, ScreenScaler.scaleX(200), ScreenScaler.scaleY(200), ScreenScaler.scaleX(600), ScreenScaler.scaleY(600), ScreenScaler.scaleX(40), ScreenScaler.scaleY(40), true);
+            plab.setBounds(ScreenScaler.scaleX(200),ScreenScaler.scaleY(100),ScreenScaler.scaleX(400),ScreenScaler.scaleY(50));
         }
         else{
-            player.bgrid = new ButtonGrid(this, 1000, 200, 1400, 600, 40, 40, true);
+            player.bgrid = new ButtonGrid(this, ScreenScaler.scaleX(1000), ScreenScaler.scaleY(200), ScreenScaler.scaleX(1400), ScreenScaler.scaleY(600), ScreenScaler.scaleX(40), ScreenScaler.scaleY(40), true);
             //xt=1000, yt=200,xb=1400, yb=600, buttonLength = 40, buttonWidth = 40 for final layout
-            plab.setBounds(1000,100,400,50);
+            plab.setBounds(ScreenScaler.scaleX(1000),ScreenScaler.scaleY(100),ScreenScaler.scaleX(400),ScreenScaler.scaleY(50));
         }
 
 
@@ -60,7 +61,7 @@ public class Player_ChoiceScreen extends JFrame{
         //Buttons to add: Remove(from grid)
 
         JButton place = new JButton("Place on grid");
-        place.setBounds(720,200,120,20);
+        place.setBounds(ScreenScaler.scaleX(720),ScreenScaler.scaleY(200),ScreenScaler.scaleX(120),ScreenScaler.scaleY(20));
         player.bgrid.no_of_ships_placed = 0;//in case user places more ships than allowed
         place.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e){
@@ -236,7 +237,7 @@ public class Player_ChoiceScreen extends JFrame{
         this.add(remove);*/
 
         JButton clear_all = new JButton("Clear all");
-        clear_all.setBounds(720,440,100,20);
+        clear_all.setBounds(ScreenScaler.scaleX(720),ScreenScaler.scaleY(440),ScreenScaler.scaleX(100),ScreenScaler.scaleY(20));
         clear_all.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e){
                 //code for clearing grid:

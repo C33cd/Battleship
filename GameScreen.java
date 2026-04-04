@@ -18,6 +18,7 @@ public class GameScreen extends JFrame{
         this.setSize(Toolkit.getDefaultToolkit().getScreenSize());
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setLayout(null);
+        ScreenScaler.initialize();
         JFrame f = this;//incase we want to use current frame inside ActionListener
 
         //window listener, in case accidentally closed
@@ -46,30 +47,30 @@ public class GameScreen extends JFrame{
 
         });
 
-        GameMain.p1.dg = new ButtonGrid(this, 200, 200, 620, 600, 42, 40, true);//player 1 plays on this
-        GameMain.p2.dg = new ButtonGrid(this, 1020, 200, 1440, 600, 42, 40, true);//player 2 plays on this
+        GameMain.p1.dg = new ButtonGrid(this, ScreenScaler.scaleX(200), ScreenScaler.scaleY(200), ScreenScaler.scaleX(620), ScreenScaler.scaleY(600), ScreenScaler.scaleX(42), ScreenScaler.scaleY(40), true);
+        GameMain.p2.dg = new ButtonGrid(this, ScreenScaler.scaleX(1020), ScreenScaler.scaleY(200), ScreenScaler.scaleX(1440), ScreenScaler.scaleY(600), ScreenScaler.scaleX(42), ScreenScaler.scaleY(40), true);
 
         JButton shoot = new JButton("Shoot");
-        shoot.setBounds(740,200,120,20); 
+        shoot.setBounds(ScreenScaler.scaleX(740),ScreenScaler.scaleY(200),ScreenScaler.scaleX(120),ScreenScaler.scaleY(20));
         this.add(shoot);
         
         JLabel pl_1 = new JLabel(GameMain.p1.name+" choosing to shoot...", SwingConstants.CENTER);
-        pl_1.setBounds(200,100,420,50);
+        pl_1.setBounds(ScreenScaler.scaleX(200),ScreenScaler.scaleY(100),ScreenScaler.scaleX(420),ScreenScaler.scaleY(50));
         this.add(pl_1);
         JLabel pl_2 = new JLabel(GameMain.p2.name+" choosing to shoot...", SwingConstants.CENTER);
-        pl_2.setBounds(1020,100,420,50);
+        pl_2.setBounds(ScreenScaler.scaleX(1020),ScreenScaler.scaleY(100),ScreenScaler.scaleX(420),ScreenScaler.scaleY(50));
         this.add(pl_2);
 
         JLabel announcer = new JLabel("Announcements",SwingConstants.CENTER);
         announcer.setVisible(false);
         //set announcer font
-        announcer.setBounds(740, 260, 160, 20);
+        announcer.setBounds(ScreenScaler.scaleX(740), ScreenScaler.scaleY(260), ScreenScaler.scaleX(160), ScreenScaler.scaleY(20));
         this.add(announcer);
 
         JTextArea announcements = new JTextArea("");
         announcements.setBounds(0, 0, 1000, 700);
         JScrollPane ann_scroller = new JScrollPane(announcements, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-        ann_scroller.setBounds(740, 300, 160, 200);
+        ann_scroller.setBounds(ScreenScaler.scaleX(740), ScreenScaler.scaleY(300), ScreenScaler.scaleX(160), ScreenScaler.scaleY(200));
         this.add(ann_scroller);
 
         controlPlayer = GameMain.p1;//initially, changes based on who is supposed to move currently

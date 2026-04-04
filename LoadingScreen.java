@@ -30,8 +30,9 @@ public class LoadingScreen extends JFrame{
     private static volatile String activeRoomCode;
 
     public LoadingScreen(){
+        ScreenScaler.initialize();
         this.setTitle("Battleship");
-        this.setBounds(100,100,500,500);
+        this.setBounds(ScreenScaler.scaleX(100),ScreenScaler.scaleY(100),ScreenScaler.scaleX(500),ScreenScaler.scaleY(500));
         this.setVisible(true);
         this.setResizable(false);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -45,7 +46,7 @@ public class LoadingScreen extends JFrame{
         this.add(l);
 
         JButton play = new JButton("Play");
-        play.setBounds(200,120,100,50);
+        play.setBounds(ScreenScaler.scaleX(200),ScreenScaler.scaleY(120),ScreenScaler.scaleX(100),ScreenScaler.scaleY(50));
         this.add(play);
         LoadingScreen f = this;
         play.addActionListener(new ActionListener() {
@@ -59,7 +60,7 @@ public class LoadingScreen extends JFrame{
         });
 
         JButton online = new JButton("Play Online");
-        online.setBounds(200,190,100,50);
+        online.setBounds(ScreenScaler.scaleX(200),ScreenScaler.scaleY(190),ScreenScaler.scaleX(100),ScreenScaler.scaleY(50));
         this.add(online);
         online.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e){
@@ -68,12 +69,12 @@ public class LoadingScreen extends JFrame{
         });
 
         JButton rules = new JButton("Rules");
-        rules.setBounds(200,260,100,50);
+        rules.setBounds(ScreenScaler.scaleX(200),ScreenScaler.scaleY(260),ScreenScaler.scaleX(100),ScreenScaler.scaleY(50));
         this.add(rules);
         rules.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e){
                 JFrame rules_popup = new JFrame("Rules of the game");
-                rules_popup.setBounds(800,100,515,600);
+                rules_popup.setBounds(ScreenScaler.scaleX(800),ScreenScaler.scaleY(100),ScreenScaler.scaleX(515),ScreenScaler.scaleY(600));
                 rules_popup.setVisible(true);
                 rules_popup.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
                 rules_popup.setLayout(new BorderLayout());
@@ -122,7 +123,7 @@ public class LoadingScreen extends JFrame{
         });
 
         JButton tutorial = new JButton("Tutorial");
-        tutorial.setBounds(200,330, 100, 50);
+        tutorial.setBounds(ScreenScaler.scaleX(200),ScreenScaler.scaleY(330), ScreenScaler.scaleX(100), ScreenScaler.scaleY(50));
         this.add(tutorial);
         tutorial.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
@@ -173,31 +174,31 @@ public class LoadingScreen extends JFrame{
         waitingDialog.getContentPane().setBackground(Color.BLACK);
 
         JLabel title = new JLabel("Waiting for player", SwingConstants.CENTER);
-        title.setBounds(0, 20, 400, 30);
+        title.setBounds(0, ScreenScaler.scaleY(20), ScreenScaler.scaleX(400), ScreenScaler.scaleY(30));
         title.setForeground(Color.WHITE);
         title.setFont(new Font("Arial", Font.BOLD, 20));
         waitingDialog.add(title);
 
         JLabel codeLabel = new JLabel("Room code: " + roomCode, SwingConstants.CENTER);
-        codeLabel.setBounds(0, 60, 500, 30);
+        codeLabel.setBounds(0, ScreenScaler.scaleY(60), ScreenScaler.scaleX(500), ScreenScaler.scaleY(30));
         codeLabel.setForeground(Color.WHITE);
         codeLabel.setFont(new Font("Arial", Font.PLAIN, 16));
         waitingDialog.add(codeLabel);
 
         JLabel endpointLabel = new JLabel("Connect using IP: " + hostIp + "   Port: " + port, SwingConstants.CENTER);
-        endpointLabel.setBounds(0, 90, 500, 30);
+        endpointLabel.setBounds(0, ScreenScaler.scaleY(90), ScreenScaler.scaleX(500), ScreenScaler.scaleY(30));
         endpointLabel.setForeground(Color.WHITE);
         endpointLabel.setFont(new Font("Arial", Font.PLAIN, 14));
         waitingDialog.add(endpointLabel);
 
         JLabel status = new JLabel("Starting server on port " + port + "...", SwingConstants.CENTER);
-        status.setBounds(0, 125, 500, 30);
+        status.setBounds(0, ScreenScaler.scaleY(125), ScreenScaler.scaleX(500), ScreenScaler.scaleY(30));
         status.setForeground(Color.WHITE);
         status.setFont(new Font("Arial", Font.PLAIN, 14));
         waitingDialog.add(status);
 
         JButton cancel = new JButton("Cancel");
-        cancel.setBounds(205, 170, 100, 25);
+        cancel.setBounds(ScreenScaler.scaleX(205), ScreenScaler.scaleY(170), ScreenScaler.scaleX(100), ScreenScaler.scaleY(25));
         cancel.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 closeQuietly(activeOnlineSocket);
@@ -280,13 +281,13 @@ public class LoadingScreen extends JFrame{
         waitingDialog.getContentPane().setBackground(Color.BLACK);
 
         JLabel status = new JLabel("Connecting to " + hostAddress.trim() + ":" + port + "...", SwingConstants.CENTER);
-        status.setBounds(0, 40, 400, 30);
+        status.setBounds(0, ScreenScaler.scaleY(40), ScreenScaler.scaleX(400), ScreenScaler.scaleY(30));
         status.setForeground(Color.WHITE);
         status.setFont(new Font("Arial", Font.PLAIN, 14));
         waitingDialog.add(status);
 
         JButton cancel = new JButton("Cancel");
-        cancel.setBounds(150, 90, 100, 25);
+        cancel.setBounds(ScreenScaler.scaleX(150), ScreenScaler.scaleY(90), ScreenScaler.scaleX(100), ScreenScaler.scaleY(25));
         cancel.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 closeQuietly(activeOnlineSocket);

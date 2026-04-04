@@ -7,14 +7,15 @@ import javax.swing.*;
 import javax.swing.event.MouseInputListener;
 public class Exp extends JFrame{
     public Exp(){
-        this.setBounds(0,0,500,500);
+        ScreenScaler.initialize();
+        this.setBounds(ScreenScaler.scaleX(0),ScreenScaler.scaleY(0),ScreenScaler.scaleX(500),ScreenScaler.scaleY(500));
         this.setLayout(null);
         this.setVisible(true);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         JFrame f = this;
 
         JPanel p1 = new JPanel();
-        p1.setBounds(0,0,100,100);
+        p1.setBounds(ScreenScaler.scaleX(0),ScreenScaler.scaleY(0),ScreenScaler.scaleX(100),ScreenScaler.scaleY(100));
         p1.setToolTipText("This is a button");
         p1.setBackground(Color.BLUE);
         this.add(p1);
@@ -25,7 +26,7 @@ public class Exp extends JFrame{
 
             @Override
             public void mouseClicked(MouseEvent e) {
-                p1.setBounds(e.getX(), e.getY(), 100, 100);
+                p1.setBounds(e.getX(), e.getY(), ScreenScaler.scaleX(100), ScreenScaler.scaleY(100));
                 f.repaint();
             }
 
@@ -53,7 +54,7 @@ public class Exp extends JFrame{
                 //think over hoe to make it move if only area in panel is clicked
                 int dx = e.getX() - coord_og.x;
                 int dy = e.getY() - coord_og.y;
-                p1.setBounds(coord_og.x + dx, coord_og.y+dy, 100, 100);
+                p1.setBounds(coord_og.x + dx, coord_og.y+dy, ScreenScaler.scaleX(100), ScreenScaler.scaleY(100));
                 f.repaint();
             }
         });

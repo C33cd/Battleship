@@ -32,6 +32,7 @@ public class OnlinePlacementScreen extends JFrame {
         this.setSize(Toolkit.getDefaultToolkit().getScreenSize());
         this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         this.setLayout(null);
+        ScreenScaler.initialize();
 
         JFrame f = this;
         this.addWindowListener(new WindowListener() {
@@ -61,13 +62,13 @@ public class OnlinePlacementScreen extends JFrame {
         });
 
         JLabel title = new JLabel(localPlayer.name+" placing ships", SwingConstants.CENTER);
-        title.setBounds(200, 100, 400, 50);
+        title.setBounds(ScreenScaler.scaleX(200), ScreenScaler.scaleY(100), ScreenScaler.scaleX(400), ScreenScaler.scaleY(50));
         this.add(title);
 
-        localPlayer.bgrid = new ButtonGrid(this, 200, 200, 600, 600, 40, 40, true);
+        localPlayer.bgrid = new ButtonGrid(this, ScreenScaler.scaleX(200), ScreenScaler.scaleY(200), ScreenScaler.scaleX(600), ScreenScaler.scaleY(600), ScreenScaler.scaleX(40), ScreenScaler.scaleY(40), true);
 
         JButton place = new JButton("Place on grid");
-        place.setBounds(720, 200, 120, 20);
+        place.setBounds(ScreenScaler.scaleX(720), ScreenScaler.scaleY(200), ScreenScaler.scaleX(120), ScreenScaler.scaleY(20));
         localPlayer.bgrid.no_of_ships_placed = 0;
         place.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {

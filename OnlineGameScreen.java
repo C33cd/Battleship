@@ -45,6 +45,8 @@ public class OnlineGameScreen extends JFrame {
         this.setSize(Toolkit.getDefaultToolkit().getScreenSize());
         this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         this.setLayout(null);
+        
+        ScreenScaler.initialize();
 
         JFrame f = this;
         this.addWindowListener(new WindowListener() {
@@ -76,35 +78,35 @@ public class OnlineGameScreen extends JFrame {
         });
 
         JLabel localTitle = new JLabel(localPlayer.name + "'s board", SwingConstants.CENTER);
-        localTitle.setBounds(200, 100, 400, 50);
+        localTitle.setBounds(ScreenScaler.scaleX(200), ScreenScaler.scaleY(100), ScreenScaler.scaleX(400), ScreenScaler.scaleY(50));
         this.add(localTitle);
 
         JLabel remoteTitle = new JLabel(remotePlayer.name + "'s board", SwingConstants.CENTER);
-        remoteTitle.setBounds(1020, 100, 400, 50);
+        remoteTitle.setBounds(ScreenScaler.scaleX(1020), ScreenScaler.scaleY(100), ScreenScaler.scaleX(400), ScreenScaler.scaleY(50));
         this.add(remoteTitle);
 
         turnLabel = new JLabel(localPlayer.name + "'s turn", SwingConstants.CENTER);
-        turnLabel.setBounds(720, 100, 160, 30);
+        turnLabel.setBounds(ScreenScaler.scaleX(720), ScreenScaler.scaleY(100), ScreenScaler.scaleX(160), ScreenScaler.scaleY(30));
         this.add(turnLabel);
 
-        localDisplayGrid = new ButtonGrid(this, 200, 200, 600, 600, 40, 40, false);
-        attackGrid = new ButtonGrid(this, 1020, 200, 1420, 600, 40, 40, true);
+        localDisplayGrid = new ButtonGrid(this, ScreenScaler.scaleX(200), ScreenScaler.scaleY(200), ScreenScaler.scaleX(600), ScreenScaler.scaleY(600), ScreenScaler.scaleX(40), ScreenScaler.scaleY(40), false);
+        attackGrid = new ButtonGrid(this, ScreenScaler.scaleX(1020), ScreenScaler.scaleY(200), ScreenScaler.scaleX(1420), ScreenScaler.scaleY(600), ScreenScaler.scaleX(40), ScreenScaler.scaleY(40), true);
 
         OnlineProtocol.paintPlacement(localDisplayGrid, localPlayer);
 
         JButton shoot = new JButton("Shoot");
-        shoot.setBounds(740, 200, 120, 20);
+        shoot.setBounds(ScreenScaler.scaleX(740), ScreenScaler.scaleY(200), ScreenScaler.scaleX(120), ScreenScaler.scaleY(20));
         this.add(shoot);
 
         announcer = new JLabel("Announcements", SwingConstants.CENTER);
         announcer.setVisible(false);
-        announcer.setBounds(720, 260, 180, 20);
+        announcer.setBounds(ScreenScaler.scaleX(720), ScreenScaler.scaleY(260), ScreenScaler.scaleX(180), ScreenScaler.scaleY(20));
         this.add(announcer);
 
         announcements = new JTextArea("");
         announcements.setEditable(false);
         JScrollPane annScroller = new JScrollPane(announcements, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-        annScroller.setBounds(720, 300, 180, 220);
+        annScroller.setBounds(ScreenScaler.scaleX(720), ScreenScaler.scaleY(300), ScreenScaler.scaleX(180), ScreenScaler.scaleY(220));
         this.add(annScroller);
 
         shoot.addActionListener(new ActionListener() {
