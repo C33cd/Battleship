@@ -1,6 +1,7 @@
 import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.GraphicsEnvironment;
+import java.io.InputStream;
 import java.io.File;
 import java.io.IOException;
 
@@ -24,14 +25,13 @@ public final class AppFonts {
     }
 
     private static Font loadHeadingFont() {
-        // Option 1: user-provided licensed copy in repo
-        try {
-            File blackadderFile = new File("fonts/BlackadderITC.ttf");
-            if (blackadderFile.exists()) {
-                Font fileFont = Font.createFont(Font.TRUETYPE_FONT, blackadderFile);
-                return fileFont.deriveFont(Font.PLAIN, 12f);
-            }
-        } catch (FontFormatException | IOException ignored) {
+        // Option 1: user-provided licensed copy in the jar or on disk
+        Font exactFont = loadFontResource("/fonts/BlackadderITC.ttf");
+        if (exactFont == null) {
+            exactFont = loadFontFile("fonts/BlackadderITC.ttf");
+        }
+        if (exactFont != null) {
+            return exactFont;
         }
 
         // Option 2: installed system font
@@ -47,14 +47,13 @@ public final class AppFonts {
     }
 
     private static Font loadBodyFont() {
-        // Option 1: user-provided licensed copy in repo
-        try {
-            File bookAntiquaFile = new File("fonts/BookAntiqua.ttf");
-            if (bookAntiquaFile.exists()) {
-                Font fileFont = Font.createFont(Font.TRUETYPE_FONT, bookAntiquaFile);
-                return fileFont.deriveFont(Font.PLAIN, 12f);
-            }
-        } catch (FontFormatException | IOException ignored) {
+        // Option 1: user-provided licensed copy in the jar or on disk
+        Font exactFont = loadFontResource("/fonts/BookAntiqua.ttf");
+        if (exactFont == null) {
+            exactFont = loadFontFile("fonts/BookAntiqua.ttf");
+        }
+        if (exactFont != null) {
+            return exactFont;
         }
 
         // Option 2: installed system font
@@ -69,12 +68,28 @@ public final class AppFonts {
         return loadFont("fonts/LibreBaskerville-Variable.ttf", "Serif");
     }
 
-    private static Font loadFont(String relativePath, String fallbackFamily) {
+    private static Font loadFontFile(String relativePath) {
         try {
-            Font fileFont = Font.createFont(Font.TRUETYPE_FONT, new File(relativePath));
+            File file = new File(relativePath);
+            if (!file.exists()) {
+                return null;
+            }
+            Font fileFont = Font.createFont(Font.TRUETYPE_FONT, file);
             return fileFont.deriveFont(Font.PLAIN, 12f);
         } catch (FontFormatException | IOException ex) {
-            return new Font(fallbackFamily, Font.PLAIN, 12);
+            return null;
+        }
+    }
+
+    private static Font loadFontResource(String resourcePath) {
+        try (InputStream inputStream = AppFonts.class.getResourceAsStream(resourcePath)) {
+            if (inputStream == null) {
+                return null;
+            }
+            Font fileFont = Font.createFont(Font.TRUETYPE_FONT, inputStream);
+            return fileFont.deriveFont(Font.PLAIN, 12f);
+        } catch (FontFormatException | IOException ex) {
+            return null;
         }
     }
 
@@ -95,5 +110,13 @@ public final class AppFonts {
 
     public static Font uiBold(float size) {
         return ui(Font.BOLD, size);
+    }
+
+    private static Font loadFont(String relativePath, String fallbackFamily) {
+        Font font = loadFontFile(relativePath);
+        if (font != null) {
+            return font;
+        }
+        return new Font(fallbackFamily, Font.PLAIN, 12);
     }
 }
