@@ -3,6 +3,9 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.FlowLayout;
+import java.awt.GraphicsEnvironment;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
@@ -25,9 +28,11 @@ public class OnlinePlacementScreen extends JFrame {
     public OnlinePlacementScreen(OnlineMatchSession session, Player localPlayer, Player remotePlayer, boolean host) {
         this.setTitle(host ? "Online Placement - Host" : "Online Placement - Client");
         this.setResizable(true);
-        this.setSize(1220, 860);
+        Rectangle usableBounds = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
+        this.setSize(Math.min(1220, usableBounds.width), Math.min(860, usableBounds.height));
         this.setMinimumSize(new Dimension(1024, 720));
-        this.setLocationRelativeTo(null);
+        this.setLocation(usableBounds.x + (usableBounds.width - this.getWidth()) / 2,
+            usableBounds.y + (usableBounds.height - this.getHeight()) / 2);
         this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         this.setLayout(new BorderLayout(16, 16));
         ((JPanel) this.getContentPane()).setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
@@ -64,7 +69,8 @@ public class OnlinePlacementScreen extends JFrame {
 
         JPanel boardGridPanel = new JPanel();
         localPlayer.bgrid = new ButtonGrid(boardGridPanel, true);
-        SquareBoardPanel boardWrapper = new SquareBoardPanel(boardGridPanel, 320, 720);
+        JPanel boardWrapper = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+        boardWrapper.add(boardGridPanel);
 
         JButton place = new JButton("Place on grid");
         JButton clearAll = new JButton("Clear all");

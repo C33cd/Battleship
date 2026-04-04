@@ -2,9 +2,12 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.FlowLayout;
+import java.awt.GraphicsEnvironment;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
@@ -27,9 +30,11 @@ public class GameScreen extends JFrame {
 
     GameScreen() {
         this.setTitle("Game");
-        this.setResizable(false);
-        this.setSize(1360, 860);
-        this.setLocationRelativeTo(null);
+        this.setResizable(true);
+        Rectangle usableBounds = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
+        this.setSize(Math.min(1360, usableBounds.width), Math.min(860, usableBounds.height));
+        this.setLocation(usableBounds.x + (usableBounds.width - this.getWidth()) / 2,
+            usableBounds.y + (usableBounds.height - this.getHeight()) / 2);
         this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         this.setLayout(new BorderLayout());
         ((JPanel) this.getContentPane()).setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
@@ -65,9 +70,10 @@ public class GameScreen extends JFrame {
         JPanel rightBoardPanel = new JPanel();
         GameMain.p1.dg = new ButtonGrid(leftBoardPanel, true);
         GameMain.p2.dg = new ButtonGrid(rightBoardPanel, true);
-
-        SquareBoardPanel leftBoardWrapper = new SquareBoardPanel(leftBoardPanel, 320, 700);
-        SquareBoardPanel rightBoardWrapper = new SquareBoardPanel(rightBoardPanel, 320, 700);
+        JPanel leftBoardWrapper = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+        leftBoardWrapper.add(leftBoardPanel);
+        JPanel rightBoardWrapper = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+        rightBoardWrapper.add(rightBoardPanel);
 
         JLabel leftTitle = new JLabel(GameMain.p1.name + " choosing to shoot...", SwingConstants.CENTER);
         JLabel rightTitle = new JLabel(GameMain.p2.name + " choosing to shoot...", SwingConstants.CENTER);

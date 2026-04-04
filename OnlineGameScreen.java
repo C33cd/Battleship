@@ -2,9 +2,12 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.FlowLayout;
+import java.awt.GraphicsEnvironment;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
@@ -45,9 +48,11 @@ public class OnlineGameScreen extends JFrame {
         this.running = true;
 
         this.setTitle(host ? "Online Game - Host" : "Online Game - Client");
-        this.setResizable(false);
-        this.setSize(1360, 860);
-        this.setLocationRelativeTo(null);
+        this.setResizable(true);
+        Rectangle usableBounds = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
+        this.setSize(Math.min(1360, usableBounds.width), Math.min(860, usableBounds.height));
+        this.setLocation(usableBounds.x + (usableBounds.width - this.getWidth()) / 2,
+            usableBounds.y + (usableBounds.height - this.getHeight()) / 2);
         this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         this.setLayout(new BorderLayout());
         ((JPanel) this.getContentPane()).setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
@@ -87,9 +92,10 @@ public class OnlineGameScreen extends JFrame {
         attackGrid = new ButtonGrid(attackBoardPanel, true);
 
         OnlineProtocol.paintPlacement(localDisplayGrid, localPlayer);
-
-        SquareBoardPanel localWrapper = new SquareBoardPanel(localBoardPanel, 320, 700);
-        SquareBoardPanel attackWrapper = new SquareBoardPanel(attackBoardPanel, 320, 700);
+        JPanel localWrapper = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+        localWrapper.add(localBoardPanel);
+        JPanel attackWrapper = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+        attackWrapper.add(attackBoardPanel);
 
         JLabel localTitle = new JLabel(localPlayer.name + "'s board", SwingConstants.CENTER);
         JLabel remoteTitle = new JLabel(remotePlayer.name + "'s board", SwingConstants.CENTER);
