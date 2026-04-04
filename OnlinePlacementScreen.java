@@ -27,7 +27,6 @@ public class OnlinePlacementScreen extends JFrame {
         this.host = host;
 
         this.setTitle(host ? "Online Placement - Host" : "Online Placement - Client");
-        this.setVisible(true);
         this.setResizable(true);
         this.setSize(Toolkit.getDefaultToolkit().getScreenSize());
         this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
@@ -278,5 +277,7 @@ public class OnlinePlacementScreen extends JFrame {
             }
         });
         this.add(done);
+
+        this.setVisible(true);
     }
 }

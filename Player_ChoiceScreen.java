@@ -7,7 +7,6 @@ import javax.swing.*;
 public class Player_ChoiceScreen extends JFrame{
     public Player_ChoiceScreen(Player player){
         this.setTitle(player.name+" Choice Grid");
-        this.setVisible(true);
         this.setResizable(true);
         this.setSize(Toolkit.getDefaultToolkit().getScreenSize());
         this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
@@ -19,19 +18,63 @@ public class Player_ChoiceScreen extends JFrame{
         //Incase this window is closed, open up loading screen
         this.addWindowListener(new WindowListener() {
             public void windowClosing(WindowEvent e){
-                new LoadingScreen();
-                f.dispose();
+                // Check if all ships have been placed
+                boolean allShipsPlaced = true;
+                for(int i = 0; i<5; i++){
+                    if(player.bt[i].gridCoord.isEmpty()){
+                        allShipsPlaced = false;
+                        break;
+                    }
+                }
+                
+                if(!allShipsPlaced){
+                    // Show confirmation dialog for forfeit
+                    int res = JOptionPane.showConfirmDialog(f, 
+                        "You haven't finished placing your ships. Do you want to forfeit the game?", 
+                        "Forfeit Game", 
+                        JOptionPane.YES_NO_OPTION);
+                    
+                    if(res == JOptionPane.YES_OPTION){
+                        // User confirmed forfeit
+                        new LoadingScreen();
+                        f.dispose();
+                    }
+                    // If user clicked No, window stays open (method returns without disposing)
+                } else {
+                    // All ships placed, allow normal close
+                    new LoadingScreen();
+                    f.dispose();
+                }
             }
             public void windowOpened(WindowEvent e){}
             public void windowDeiconified(WindowEvent e){}
             public void windowActivated(WindowEvent e){}
             public void windowClosed(WindowEvent e){
                 //write an if conditonal for if player 1 close screen without completing selection
-                if(player.playerno==1)
-                    JOptionPane.showMessageDialog(f, "Your ships have been successfully placed. Please let "+GameMain.p2.name+" make their arrangement of ships", "Success", JOptionPane.PLAIN_MESSAGE);
-                else if(player.playerno==2)
-                    JOptionPane.showMessageDialog(f, "Your ships have been successfully placed. You can call "+GameMain.p1.name+" back to play. \n"+GameMain.p1.name+" starts first", "Success", JOptionPane.PLAIN_MESSAGE);
+                boolean allShipsPlaced = true;
+                for(int i = 0; i<5; i++){
+                    if(player.bt[i].gridCoord.isEmpty()){
+                        allShipsPlaced = false;
+                        break;
+                    }
+                }
 
+                if(player.playerno==1){
+                    if(!allShipsPlaced){
+                        JOptionPane.showMessageDialog(f, "Player 1 has not completed ship placement. Player 2 wins by default. Returning to loading screen.", "Game Over", JOptionPane.PLAIN_MESSAGE);
+                    }
+                    else{
+                    JOptionPane.showMessageDialog(f, "Your ships have been successfully placed. Please let "+GameMain.p2.name+" make their arrangement of ships", "Success", JOptionPane.PLAIN_MESSAGE);
+                    }
+                }
+                else if(player.playerno==2){
+                    if(!allShipsPlaced){
+                        JOptionPane.showMessageDialog(f, "Player 2 has not completed ship placement. Player 1 wins by default. Returning to loading screen.", "Game Over", JOptionPane.PLAIN_MESSAGE);
+                    }
+                    else{
+                        JOptionPane.showMessageDialog(f, "Your ships have been successfully placed. You can call "+GameMain.p1.name+" back to play. \n"+GameMain.p1.name+" starts first", "Success", JOptionPane.PLAIN_MESSAGE);
+                    }
+                }
             }
             public void windowDeactivated(WindowEvent e){} 
             public void windowIconified(WindowEvent e){}
@@ -297,6 +340,8 @@ public class Player_ChoiceScreen extends JFrame{
                 }
             }
         });
+
+        this.setVisible(true);
         
         
     }

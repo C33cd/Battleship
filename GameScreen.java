@@ -13,7 +13,6 @@ public class GameScreen extends JFrame{
     Player passivePlayer;
     GameScreen(){
         this.setTitle("Game");
-        this.setVisible(true);
         this.setResizable(true);
         this.setSize(Toolkit.getDefaultToolkit().getScreenSize());
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -139,6 +138,8 @@ public class GameScreen extends JFrame{
                 }
             }
         });
+
+        this.setVisible(true);
         
     }
 }

@@ -33,7 +33,6 @@ public class LoadingScreen extends JFrame{
         ScreenScaler.initialize();
         this.setTitle("Battleship");
         this.setBounds(ScreenScaler.scaleX(100),ScreenScaler.scaleY(100),ScreenScaler.scaleX(500),ScreenScaler.scaleY(500));
-        this.setVisible(true);
         this.setResizable(false);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setLayout(null);
@@ -130,7 +129,8 @@ public class LoadingScreen extends JFrame{
                 new TutorialScreen();
             }
         });
-
+        
+        this.setVisible(true);
     }
 
     private static void showOnlineSetup(JFrame parent) {

@@ -40,7 +40,6 @@ public class OnlineGameScreen extends JFrame {
         this.running = true;
 
         this.setTitle(host ? "Online Game - Host" : "Online Game - Client");
-        this.setVisible(true);
         this.setResizable(true);
         this.setSize(Toolkit.getDefaultToolkit().getScreenSize());
         this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
@@ -255,6 +254,7 @@ public class OnlineGameScreen extends JFrame {
         receiverThread.start();
 
         updateTurnLabel();
+        this.setVisible(true);
     }
 
     private void updateTurnLabel() {

@@ -5,7 +5,6 @@ import javax.swing.JFrame;
 public class TutorialScreen extends JFrame{
     TutorialScreen(){
         this.setTitle("Tutorial");
-        this.setVisible(true);
         this.setResizable(true);
         this.setSize(Toolkit.getDefaultToolkit().getScreenSize());
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -15,5 +14,6 @@ public class TutorialScreen extends JFrame{
 
 
 
+        this.setVisible(true);
     }
 }
